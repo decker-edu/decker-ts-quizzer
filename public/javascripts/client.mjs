@@ -6,7 +6,7 @@ import {
 } from "./components.mjs";
 const clientArea = document.getElementById("client-area");
 
-import config from "config.mjs";
+import config from "./config.mjs";
 
 let pingCount = 0;
 
@@ -25,10 +25,9 @@ if (location.protocol === "http:") {
 }
 let hostname = location.hostname;
 let port = location.port;
-let subroute = config.subroute;
 
 // export const connection = new WebSocket("ws://localhost:3001/api/websocket");
-const target = `${protocol}//${hostname}:${port}${subroute}/api/websocket`;
+const target = `${protocol}//${hostname}:${port}${config.subroute}/api/websocket`;
 console.log(target);
 export const connection = new WebSocket(target);
 

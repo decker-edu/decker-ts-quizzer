@@ -8,6 +8,8 @@ import {
   createTestSession,
 } from "./test.mjs";
 
+import config from "./config.mjs";
+
 const location = window.location;
 let protocol = "wss:";
 if (location.protocol === "http:") {
@@ -17,7 +19,7 @@ let hostname = location.hostname;
 let port = location.port;
 
 export const host = new WebSocket(
-  `${protocol}//${hostname}:${port}/api/websocket`
+  `${protocol}//${hostname}:${port}${config.subroute}/api/websocket`
 );
 
 function showHostButtons() {
