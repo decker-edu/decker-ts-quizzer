@@ -1,3 +1,3 @@
 export default {
-  subroute: "/t/",
+  subroute: "/t",
 };

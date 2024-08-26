@@ -26,7 +26,6 @@ if (location.protocol === "http:") {
 let hostname = location.hostname;
 let port = location.port;
 
-// export const connection = new WebSocket("ws://localhost:3001/api/websocket");
 const target = `${protocol}//${hostname}:${port}${config.subroute}/api/websocket`;
 console.log(target);
 export const connection = new WebSocket(target);
