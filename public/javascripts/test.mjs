@@ -1,4 +1,5 @@
 import { addHostMessage } from "./host.mjs";
+import config from "./config.mjs";
 
 export let testSession = {
   id: undefined,
@@ -153,7 +154,7 @@ export const testChoiceQuiz = {
 
 export async function createTestSession() {
   try {
-    const response = await fetch("/api/session", {
+    const response = await fetch(`${config.subroute}/api/session`, {
       method: "POST",
     });
     const json = await response.json();
