@@ -1,0 +1,38 @@
+.winner-container {
+  display: block;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1024;
+  width: 100vw;
+  height: 100vh;
+  background-color: #269f37;
+}
+
+.winner-message {
+  display: block;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%);
+  color: #ffe33f;
+  font-size: 4rem;
+  font-weight: bold;
+  text-shadow:
+    -1px -1px 0 black,
+     1px  1px 0 black,
+    -1px  1px 0 black,
+     1px -1px 0 black;
+  animation: wiggle 1s infinite;
+  transform-origin: 50% 50%;
+  white-space: nowrap;
+}
+
+@keyframes wiggle {
+  0%,40%,100% {
+    transform: translate(-50%) rotate(-10deg);
+  }
+  20% {
+    transform: translate(-50%) rotate(10deg);
+  }
+}

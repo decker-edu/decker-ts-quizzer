@@ -1,0 +1,85 @@
+.assignment-quiz {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: space-between;
+}
+
+.assignment-quiz p {
+  font-size: 4rem;
+  text-align: center;
+  font-weight: bold;
+}
+
+.assignment-quiz button.answer {
+  background-color: #e6f598;
+}
+
+.assignment-quiz button.answer:hover {
+  background-color: #abdda4;
+}
+
+.category {
+  display: grid;
+  grid-template-areas: "label" "items";
+  min-height: 96px;
+  gap: 1rem;
+  background-color: #fee08b;
+}
+
+.category:hover {
+  background-color: #fdae61;
+}
+
+.category .items {
+  padding: 1rem;
+  grid-area: items;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  min-height: 72px;
+}
+
+.category .items:has(button:only-child) {
+  justify-content: center;
+}
+
+.category .answer {
+  min-width: 128px;
+  min-height: 64px;
+  box-shadow: 2px 2px 4px #222222;
+}
+
+.categories {
+  margin-top: 2rem;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.categories .category {
+  flex: 1 0 0;
+  min-width: 45%;
+}
+
+.category > span {
+  font-weight: bold;
+  grid-area: label;
+}
+
+.category .answer.selected {
+  border-color: goldenrod;
+  background-color: #5e4fa2;
+  color: #eeeeee;
+}
+
+.dragover {
+  background-color: #d53e4f;
+}
+
+.category.answer-bucket {
+  min-width: 80%;
+  margin: auto;
+}

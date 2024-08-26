@@ -1,0 +1,31 @@
+.choice-quiz p {
+  font-size: 2rem;
+}
+
+.choice-quiz button {
+  font-size: 3rem;
+  padding: 1rem 2rem;
+  background-color: #fee08b;
+  border-radius: 0.5rem;
+}
+
+.choice-quiz button:hover:not(:disabled) {
+  background-color: #fdae61;
+}
+
+.choice-quiz button:active:not(:disabled) {
+  background-color: #f46d43;
+}
+
+.choice-quiz button[aria-pressed=true] {
+  background-color: #3288bd;
+}
+
+.choice-quiz button[aria-pressed=true]:hover:not(:disabled) {
+  background-color: #66c2a5;
+}
+
+.choice-quiz button[aria-pressed=true]:active:not(:disabled) {
+  background-color: #5e4fa2;
+  color: white;
+}

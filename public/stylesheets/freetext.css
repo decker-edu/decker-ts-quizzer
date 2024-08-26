@@ -1,0 +1,19 @@
+.text-quiz {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.text-quiz p {
+  font-size: 3rem;
+  text-align: center;
+}
+
+.text-quiz input[type="text"] {
+  font-size: 3rem;
+}
+
+.text-quiz input[type="text"]:focus {
+    outline: 2px solid #f46d43;
+}
+

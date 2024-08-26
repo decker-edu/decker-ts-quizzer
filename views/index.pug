@@ -1,0 +1,21 @@
+extends layout
+
+block scripts
+  script(type="module", src="./javascripts/client.mjs") 
+  script(type="module", src="./javascripts/host.mjs") 
+  script(src="./javascripts/wordcloud2.js")
+
+block content
+  h1= title
+  h2 Host Area
+  div#host-area
+  div#host-buttons(hidden)
+    button#setTestButton(type="button") Set Test Quiz
+    button#evaluateButton(type="button") Evaluate Quiz
+  div#canvas-area
+
+  h2 Client Area
+  div#connect-area
+    input#session-id(type="text" placeholder="Session ID")
+    button(type="button" onclick="moduleConnect()") Connect
+  div#client-area

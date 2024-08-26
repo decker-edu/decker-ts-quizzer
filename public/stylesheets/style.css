@@ -1,0 +1,105 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap');
+@import url('./choice.css');
+@import url('./freetext.css');
+@import url('./selection.css');
+@import url('./assignment.css');
+@import url('./winner.css');
+
+html {
+  font-family: Lato;
+}
+
+html, body {
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  height: 100%;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+textarea, input, button, select {
+  font: inherit;
+  letter-spacing: inherit;
+  line-height: inherit;
+  word-spacing: inherit;
+}
+
+button {
+  font-size: 3rem;
+  padding: 1rem 2rem;
+  border-radius: 0.5rem;
+  border: 2px outset black;
+}
+
+#client-area {
+  padding: 2rem;
+  flex: 1 0 0;
+  background-color: #0680ff;
+}
+
+.choice-quiz p {
+  text-align: center;
+}
+
+.answer-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  gap: 1rem;
+  flex: 1 0 0;
+}
+
+.submit-container {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+:is(.wait-container, .done-container) {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background-color: #0680ff;
+}
+
+:is(.wait-container, .done-container) span {
+  display: block;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%);
+  color: #ffe33f;
+  font-size: 4rem;
+  font-weight: bold;
+  text-shadow:
+    -1px -1px 0 black,
+     1px  1px 0 black,
+    -1px  1px 0 black,
+     1px -1px 0 black;
+  transform-origin: 50% 50%;
+  white-space: nowrap;
+}
+
+button[type="submit"] {
+  background-color: #9e0142;
+  color: white;
+}
+
+button[type="submit"]:disabled {
+  background-color: #9e0142;
+  color: rgba(16,16,16,0.3);
+}
+
+button[type="submit"]:hover:not(:disabled) {
+  background-color: #d53e4f;
+  color: black;
+}
+
+button[type="submit"]:active:not(:disabled) {
+  background-color: #f46d43;
+  color: black;
+}

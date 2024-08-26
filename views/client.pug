@@ -1,0 +1,10 @@
+extends layout
+
+block scripts
+  script(type="module", src="./javascripts/client.mjs") 
+
+block content
+  div#connect-area
+    input#session-id(type="text" placeholder="Session ID")
+    button(type="button" onclick="moduleConnect()") Connect
+  div#client-area
