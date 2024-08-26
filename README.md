@@ -7,6 +7,12 @@ npm install
 npm run build
 ```
 
+## run
+
+```
+npm start
+```
+
 ## compile and run
 
 ```
