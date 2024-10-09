@@ -222,6 +222,7 @@ export default class Session {
 
   addAnswer(connection: Connection, answer: string[]) {
     this.answers.push([connection, answer]);
+    connection.answers = answer;
   }
 
   removeConnection(connection: Connection) {
@@ -480,5 +481,10 @@ export default class Session {
       winner.ws.send(JSON.stringify({ type: "winner" }));
     }
     this.sendQuizStateToHost(result);
+    // Reset internal state
+    this.activeQuiz = undefined;
+    for (const connection of this.connections) {
+      connection.answers = undefined;
+    }
   }
 }
