@@ -392,7 +392,11 @@ export default class Renderer {
           }
         }
       });
-      button.innerHTML = answer.label;
+      if (answer.letter) {
+        button.innerHTML = answer.letter;
+      } else {
+        button.innerHTML = answer.label;
+      }
       answerContainer.appendChild(button);
       answerButtons.push(button);
     }

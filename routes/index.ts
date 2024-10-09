@@ -23,6 +23,10 @@ router.get("/", function (req: Request, res: Response, next: NextFunction) {
   return res.render("index", { title: "Quizzer" });
 });
 
+router.get("/test", function (req: Request, res: Response, next: NextFunction) {
+  return res.render("test", { title: "Quizzer" });
+});
+
 router.get(
   "/client",
   function (req: Request, res: Response, next: NextFunction) {

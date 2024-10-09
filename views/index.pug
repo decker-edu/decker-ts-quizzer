@@ -1,21 +1,40 @@
 extends layout
 
+block styles
+
 block scripts
-  script(type="module", src="./javascripts/client.mjs") 
-  script(type="module", src="./javascripts/host.mjs") 
-  script(src="./javascripts/wordcloud2.js")
 
 block content
-  h1= title
-  h2 Host Area
-  div#host-area
-  div#host-buttons(hidden)
-    button#setTestButton(type="button") Set Test Quiz
-    button#evaluateButton(type="button") Evaluate Quiz
-  div#canvas-area
-
-  h2 Client Area
-  div#connect-area
-    input#session-id(type="text" placeholder="Session ID")
-    button(type="button" onclick="moduleConnect()") Connect
-  div#client-area
+  header
+    h1= title
+  main
+    section
+      h2 Documentation
+      p This is the main page of the decker quizzer backend.
+      p You can find the client page <a href="./client">here</a>.
+      section
+        h3 API
+        section
+          h4 <code>/api/session</code>
+          p A host can create a new quiz session by sending an empty <code>POST</code> request.
+          section
+            h5 Response
+            p The response is the public id of the new session as well as a secret to identify yourself as its host.
+            pre
+              code
+                | {
+                |   id: id,
+                |   secret: secret
+                | }
+        section
+          h4 <code>/api/session/:id/question
+          p A host can set the question of the current session by sending a <code>POST</code> request with the following content:
+          section
+            h5 Request
+            p The request must contain both the secret of the session as well as a new question object.
+            pre
+              code
+                | {
+                |   secret: string,
+                |   question: {}
+                | }

@@ -6,6 +6,8 @@ import {
 } from "./components.mjs";
 const clientArea = document.getElementById("client-area");
 
+import bwip from "./bwip.js";
+
 import config from "./config.mjs";
 
 let pingCount = 0;
@@ -65,7 +67,6 @@ function hideConnectInput() {
 
 connection.addEventListener("open", async (event) => {
   clearClientArea();
-  clientArea.appendChild(createWaitInterface());
   setInterval(() => ping(connection), 1000);
   const session = getSessionID();
   if (session) {
@@ -114,7 +115,30 @@ export async function handleMessage(event) {
     if (json.type === "sessionchange") {
       if (json.operation === "connect") {
         hideConnectInput();
+
+        clearClientArea();
+        clientArea.appendChild(createWaitInterface());
+
+        let url = new URL(window.location);
+        url.search = `session=${json.value}`;
+
+        history.replaceState({}, "", url);
+
+        const canvas = document.getElementById("menu-qr-code");
+        bwip.toCanvas(canvas, {
+          bcid: "qrcode",
+          text: window.location.toString(),
+          scale: 16,
+          includetext: true,
+          textxalign: "center",
+          eclevel: "L",
+        });
+        const label = document.getElementById("menu-session-label");
+        label.innerText = json.value;
       }
+    }
+    if (json.type === "ping") {
+      connection.send(JSON.stringify({ type: "pong" }));
     }
     if (json.type === "pong") {
       pingCount = 0;
@@ -131,3 +155,13 @@ connection.addEventListener("message", handleMessage);
 connection.addEventListener("close", (event) => {
   console.log("Websocket: Closed");
 });
+
+const dialog = document.getElementById("share-dialog");
+dialog.addEventListener("click", (event) => {
+  dialog.close();
+});
+
+window.openDialog = () => {
+  const dialog = document.getElementById("share-dialog");
+  dialog.showModal();
+};

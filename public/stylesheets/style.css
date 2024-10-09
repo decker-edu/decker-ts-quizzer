@@ -19,13 +19,7 @@ html, body {
 body {
   display: flex;
   flex-direction: column;
-}
-
-textarea, input, button, select {
-  font: inherit;
-  letter-spacing: inherit;
-  line-height: inherit;
-  word-spacing: inherit;
+  align-items: center;
 }
 
 button {
@@ -33,12 +27,6 @@ button {
   padding: 1rem 2rem;
   border-radius: 0.5rem;
   border: 2px outset black;
-}
-
-#client-area {
-  padding: 2rem;
-  flex: 1 0 0;
-  background-color: #0680ff;
 }
 
 .choice-quiz p {
@@ -102,4 +90,12 @@ button[type="submit"]:hover:not(:disabled) {
 button[type="submit"]:active:not(:disabled) {
   background-color: #f46d43;
   color: black;
+}
+
+pre:has(code) {
+  background-color: lightgrey;
+}
+
+code {
+  background-color: lightgray;
 }

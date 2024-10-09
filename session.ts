@@ -41,6 +41,10 @@ export class Connection {
   session: Session | undefined;
   answers: string[] | undefined;
 
+  responseMiliseconds: number = 0;
+  lastPing: number = 0;
+  missedPing: number = 0;
+
   constructor(ws: WebSocket) {
     this.ws = ws;
     this.session = undefined;
@@ -81,7 +85,12 @@ export class Connection {
           }
         }
         if (json.type === "ping") {
-          return ws.send(JSON.stringify({ type: "pong", text: "" }));
+          return ws.send(JSON.stringify({ type: "pong" }));
+        }
+        if (json.type === "pong") {
+          connection.responseMiliseconds =
+            performance.now() - connection.lastPing;
+          connection.missedPing = 0;
         }
         if (json.type === "quiz") {
           if (!connection.session) {
@@ -108,8 +117,8 @@ export class Connection {
             if (!Array.isArray(json.answer)) {
               return terminate(ws, "Answers are not an array");
             }
-            connection.answers = json.answer;
             if (connection.session) {
+              connection.session.addAnswer(connection, json.answer);
               connection.session.sendQuizStateToHost(undefined);
             }
           }
@@ -130,6 +139,19 @@ export class Connection {
     this.answers = undefined;
     this.ws.send(JSON.stringify({ type: "quiz", quiz: quiz }));
   }
+
+  sendPing() {
+    if (this.missedPing > 2) {
+      console.log("connection lost");
+      this.ws.close();
+      return;
+    }
+    this.ws.send(
+      JSON.stringify({ type: "ping", ms: this.responseMiliseconds })
+    );
+    this.lastPing = performance.now();
+    this.missedPing++;
+  }
 }
 
 function sendHostReplacedMessage(connection: Connection) {
@@ -142,12 +164,16 @@ export default class Session {
   host: Connection | undefined;
   connections: Connection[];
   activeQuiz: Quiz | undefined;
+  answers: [Connection, string[]][];
   result: any;
+  pinger: NodeJS.Timeout | undefined;
 
   constructor(id: string, secret: string) {
     this.id = id;
     this.secret = secret;
     this.connections = [];
+    this.answers = [];
+    this.pinger = undefined;
   }
 
   setHost(connection: Connection | undefined) {
@@ -155,6 +181,18 @@ export default class Session {
       sendHostReplacedMessage(this.host);
     }
     this.host = connection;
+    this.startPing();
+  }
+
+  startPing() {
+    const session = this;
+    this.pinger = setInterval(() => {
+      if (session.host) {
+        session.host.sendPing();
+      } else {
+        clearInterval(session.pinger);
+      }
+    }, 1000);
   }
 
   sendToClients(message: any) {
@@ -182,7 +220,18 @@ export default class Session {
     }
   }
 
+  addAnswer(connection: Connection, answer: string[]) {
+    this.answers.push([connection, answer]);
+  }
+
   removeConnection(connection: Connection) {
+    if (this.host === connection) {
+      console.log(`[${this.id}] The host has left the session!`);
+      if (this.pinger) {
+        clearInterval(this.pinger);
+        this.pinger = undefined;
+      }
+    }
     const index = this.connections.indexOf(connection);
     if (index > -1) {
       const connection = this.connections.splice(index, 1)[0];
@@ -218,85 +267,90 @@ export default class Session {
 
   setQuiz(quiz: Quiz) {
     this.activeQuiz = quiz;
+    this.answers = [];
     for (const connection of this.connections) {
       connection.resetQuiz(quiz);
     }
   }
 
   evaluateChoiceQuiz(): [Connection[], any] {
+    const winners: Connection[] = [];
+    const result: any = {};
+
     if (!this.activeQuiz) {
       return [[], undefined];
     }
-    const winners: Connection[] = [];
-    const result: any = {};
+    /* Get correct answers and the labels of these answers */
+    const correctAnswers = this.activeQuiz.choices[0].options.filter(
+      (answer) => answer.correct
+    );
+    const correctLabels = correctAnswers.map((answer) => answer.label);
+
+    /* Reset choosable option count for result */
     for (const option of this.activeQuiz.choices[0].options) {
       option.chosen = 0;
     }
-    for (const connection of this.connections) {
-      if (connection.answers) {
-        for (const givenAnswer of connection.answers) {
-          const answer = this.activeQuiz.choices[0].options.find(
-            (answer) => answer.label === givenAnswer
-          );
-          if (answer) {
-            answer.chosen++;
-          }
-        }
-        let allCorrect: boolean = true;
-        const correctAnswers = this.activeQuiz.choices[0].options.filter(
-          (answer) => answer.correct
+
+    /* For each given answer, count chosen values */
+    for (const [connection, answers] of this.answers) {
+      /* A user can win if their answer includes all correct values and only the correct values */
+      let canWin: boolean = true;
+      for (const answer of answers) {
+        const option = this.activeQuiz.choices[0].options.find(
+          (option) => option.label === answer
         );
-        const correctStrings = correctAnswers.map((answer) => answer.label);
-        for (const answer of correctStrings) {
-          if (!connection.answers.includes(answer)) {
-            allCorrect = false;
+        if (option) {
+          option.chosen++;
+          if (!option.correct) {
+            canWin = false;
           }
         }
-        if (allCorrect) {
-          winners.push(connection);
+      }
+      for (const correctLabel of correctLabels) {
+        if (!answers.includes(correctLabel)) {
+          canWin = false;
+          break;
         }
-      } else {
-        //ERROR: No given answers
       }
-      for (const option of this.activeQuiz.choices[0].options) {
-        result[option.label] = option.chosen;
+      if (canWin) {
+        winners.push(connection);
       }
+    }
+    for (const option of this.activeQuiz.choices[0].options) {
+      result[option.label] = option.chosen;
     }
     return [winners, result];
   }
 
   evaluateFreeQuiz(): [Connection[], any] {
+    const winners: Connection[] = [];
+    const result: any[] = [];
+    const correctAnswers = [];
     if (!this.activeQuiz) {
       return [[], undefined];
     }
-    const winners: Connection[] = [];
-    const result: any[] = [];
+    /* Each answer field gets its own object */
     for (const choice of this.activeQuiz.choices) {
       result.push({});
+      const correctChoices = choice.options.filter((answer) => answer.correct);
+      const correctLabels = correctChoices.map((choice) => choice.label);
+      correctAnswers.push(correctLabels);
     }
-    for (const connection of this.connections) {
+    /* Aggregate Answers */
+    for (const [connection, answers] of this.answers) {
       let canWin = true;
-      if (connection.answers) {
-        for (let index = 0; index < this.activeQuiz.choices.length; index++) {
-          const answer = connection.answers[index];
-          if (result[index][answer]) {
-            result[index][answer] = result[index][answer] + 1;
-          } else {
-            result[index][answer] = 1;
-          }
-          const possibleAnswers = this.activeQuiz.choices[index].options;
-          const correctAnswers = possibleAnswers.filter(
-            (answer) => answer.correct
-          );
-          const correctStrings: string[] = correctAnswers.map(
-            (answer: Answer) => answer.label
-          );
-          if (!correctStrings.includes(answer)) {
-            canWin = false;
-          }
+      /* for each text field count each given answer */
+      for (let index = 0; index < this.activeQuiz.choices.length; index++) {
+        const answer = answers[index];
+        if (result[index][answer]) {
+          result[index][answer] = result[index][answer] + 1;
+        } else {
+          result[index][answer] = 1;
         }
-      } else {
-        canWin = false;
+        const correctLabels = correctAnswers[index];
+        if (!correctLabels.includes(answer)) {
+          canWin = false;
+        }
       }
       if (canWin) {
         winners.push(connection);
@@ -306,38 +360,32 @@ export default class Session {
   }
 
   evaluateSelectionQuiz(): [Connection[], any] {
+    const winners: Connection[] = [];
+    const result: any = [];
+    const correctAnswers = [];
     if (!this.activeQuiz) {
       return [[], undefined];
     }
-    let winners: Connection[] = [];
-    let result: any = [];
     // Prepare the result array object
     for (const choice of this.activeQuiz.choices) {
       const pick: any = {};
       for (const option of choice.options) {
         pick[option.label] = 0;
       }
+      const correctChoices = choice.options.filter((answer) => answer.correct);
+      const correctLabels = correctChoices.map((answer) => answer.label);
+      correctAnswers.push(correctLabels);
       result.push(pick);
     }
-    for (const connection of this.connections) {
+    for (const [connection, answers] of this.answers) {
       let canWin = true;
-      if (connection.answers) {
-        for (let i = 0; i < connection.answers.length; i++) {
-          const answer = connection.answers[i];
-          result[i][answer] = result[i][answer] + 1;
-          const possibleAnswers = this.activeQuiz.choices[i].options;
-          const correctAnswers = possibleAnswers.filter(
-            (answer) => answer.correct
-          );
-          const correctStrings: string[] = correctAnswers.map(
-            (answer: Answer) => answer.label
-          );
-          if (!correctStrings.includes(answer)) {
-            canWin = false;
-          }
+      for (let index = 0; index < answers.length; index++) {
+        const answer = answers[index];
+        result[index][answer] = result[index][answer] + 1;
+        const correctLabels = correctAnswers[index];
+        if (!correctLabels.includes(answer)) {
+          canWin = false;
         }
-      } else {
-        canWin = false;
       }
       if (canWin) {
         winners.push(connection);
@@ -347,23 +395,29 @@ export default class Session {
   }
 
   evaluateAssignmentQuiz(): [Connection[], any] {
+    let winners: Connection[] = [];
+    let result: any = [];
     if (!this.activeQuiz) {
       return [[], undefined];
     }
-    let winners: Connection[] = [];
-    let result: any = [];
+    /* An Assignment Quiz has only one choice entry */
     const choices = this.activeQuiz.choices[0].options;
+
     const answers = [];
     const reasons = [];
+
+    /* Each choice represents an assignable object and its reason is the "correct" category */
     for (const choice of choices) {
       answers.push(choice.label);
       if (choice.reason) {
         reasons.push(choice.reason);
       }
     }
+    /* If two objects have the same reason they share the same category so we can filter unique reasons */
     const uniqueReasons = reasons.filter(
       (value, index, array) => array.indexOf(value) === index
     );
+    /* The result needs information about which objects have been assigned to which category */
     for (const reason of uniqueReasons) {
       const object: any = { label: reason, assignments: {} };
       for (const answer of answers) {
@@ -371,30 +425,31 @@ export default class Session {
       }
       result.push(object);
     }
+    /* Create a category for an unassigned object */
     const none: any = { label: "None", assignments: {} };
     for (const answer of answers) {
       none.assignments[answer] = 0;
     }
     result.push(none);
-    for (const connection of this.connections) {
+
+    /* Each answer represents an assignment: label (object) -> reason (category) */
+    for (const [connection, answers] of this.answers) {
       let canWin = true;
-      if (connection.answers) {
-        const assignment: any = connection.answers[0];
-        for (const label in assignment) {
-          const reason = assignment[label];
-          const object = result.find((object: any) => object.label === reason);
-          object.assignments[label] = object.assignments[label] + 1;
-          const answer = choices.find((choice) => choice.label === label);
-          if (
-            (!answer || answer.reason !== assignment[label]) &&
-            answer?.reason !== undefined
-          ) {
-            canWin = false;
-          }
+      const assignment: any = answers[0];
+      for (const label in assignment) {
+        const reason = assignment[label];
+        const object = result.find((object: any) => object.label === reason);
+        object.assignments[label] = object.assignments[label] + 1;
+        const answer = choices.find((choice) => choice.label === label);
+        if (
+          (!answer || answer.reason !== assignment[label]) &&
+          answer?.reason !== undefined
+        ) {
+          canWin = false;
         }
-        if (canWin) {
-          winners.push(connection);
-        }
+      }
+      if (canWin) {
+        winners.push(connection);
       }
     }
     return [winners, result];

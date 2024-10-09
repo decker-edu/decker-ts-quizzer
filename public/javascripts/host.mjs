@@ -31,8 +31,20 @@ function showHostButtons() {
   const span = document.createElement("span");
   span.innerText = `${testSession.id}, ${testSession.secret}`;
   element.appendChild(span);
-  const sendButton = document.getElementById("setTestButton");
-  sendButton.addEventListener("click", () => {
+  const choiceButton = document.getElementById("choiceTestButton");
+  choiceButton.addEventListener("click", () => {
+    host.send(JSON.stringify({ type: "quiz", quiz: testChoiceQuiz }));
+  });
+  const selectButton = document.getElementById("selectTestButton");
+  selectButton.addEventListener("click", () => {
+    host.send(JSON.stringify({ type: "quiz", quiz: testSelectQuiz }));
+  });
+  const freetextButton = document.getElementById("freetextTestButton");
+  freetextButton.addEventListener("click", () => {
+    host.send(JSON.stringify({ type: "quiz", quiz: testTextQuiz }));
+  });
+  const assignmentButton = document.getElementById("assignmentTestButton");
+  assignmentButton.addEventListener("click", () => {
     host.send(JSON.stringify({ type: "quiz", quiz: testAssignQuiz }));
   });
   const evalButton = document.getElementById("evaluateButton");
