@@ -1,4 +1,4 @@
-import { connection, sendAnswers } from "./client.mjs";
+import { sendAnswers } from "./sio-client.mjs";
 
 let selectedAnswer = undefined;
 let draggedAnswer = null;

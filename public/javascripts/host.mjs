@@ -1,4 +1,4 @@
-import { handleMessage, connection } from "./client.mjs";
+import { handleMessage, webSocket } from "./client.mjs";
 import {
   testChoiceQuiz,
   testSelectQuiz,
@@ -9,18 +9,6 @@ import {
 } from "./test.mjs";
 
 import config from "./config.mjs";
-
-const location = window.location;
-let protocol = "wss:";
-if (location.protocol === "http:") {
-  protocol = "ws:";
-}
-let hostname = location.hostname;
-let port = location.port;
-
-export const host = new WebSocket(
-  `${protocol}//${hostname}:${port}${config.subroute}/api/websocket`
-);
 
 function showHostButtons() {
   const element = document.getElementById("host-buttons");
@@ -53,6 +41,20 @@ function showHostButtons() {
   });
 }
 
+const location = window.location;
+let protocol = "wss:";
+if (location.protocol === "http:") {
+  protocol = "ws:";
+}
+let hostname = location.hostname;
+let port = location.port;
+
+export const host = new WebSocket(
+  `${protocol}//${hostname}:${port}${config.subroute}/api/websocket`
+);
+
+host.addEventListener("message", handleMessage);
+
 host.addEventListener("open", async (event) => {
   try {
     await createTestSession();
@@ -68,14 +70,14 @@ host.addEventListener("open", async (event) => {
     console.error(error);
     return;
   }
-  if (connection.readyState !== connection.OPEN) {
-    connection.addEventListener("open", () => {
-      connection.send(
+  if (webSocket.readyState !== webSocket.OPEN) {
+    webSocket.addEventListener("open", () => {
+      webSocket.send(
         JSON.stringify({ type: "connect", session: testSession.id })
       );
     });
   } else {
-    connection.send(
+    webSocket.send(
       JSON.stringify({ type: "connect", session: testSession.id })
     );
   }
@@ -87,5 +89,3 @@ export function addHostMessage(message) {
   item.innerText = message;
   hostArea.appendChild(item); */
 }
-
-host.addEventListener("message", handleMessage);

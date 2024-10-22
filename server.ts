@@ -1,8 +1,8 @@
 import app from "./app";
 import Debug from "debug";
 import http from "http";
-import ws from "ws";
-import Session, { Connection } from "./session";
+import { Server } from "socket.io";
+import SIOConnection from "./connection";
 
 const debug = Debug("decker-ts-quizzer");
 
@@ -22,11 +22,23 @@ let server = http.createServer(app);
 server.on("error", onError);
 server.on("listening", onListening);
 
+const io = new Server(server, {
+  cors: {
+    origin: "*",
+  },
+});
+
+io.on("connection", (socket) => {
+  const connection = new SIOConnection(socket);
+});
+
+/* old websocket code
 let wss = new ws.Server({ server, path: "/api/websocket" });
 
 wss.on("connection", function (ws: WebSocket) {
   const connection = new Connection(ws);
 });
+*/
 
 /**
  * Normalize a port into a number, string, or false.

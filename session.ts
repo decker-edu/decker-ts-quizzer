@@ -1,17 +1,19 @@
+import SIOConnection from "./connection";
+
 const sessions = new Map<string, Session>();
 
-type Quiz = {
+export type Quiz = {
   type: "choice" | "selection" | "freetext" | "assignment";
   question: string;
   choices: Choice[];
 };
 
-type Choice = {
+export type Choice = {
   votes: number;
   options: Answer[];
 };
 
-type Answer = {
+export type Answer = {
   label: string;
   reason: string;
   correct: boolean;
@@ -31,238 +33,72 @@ export function register(id: string, session: Session): void {
   sessions.set(id, session);
 }
 
-function terminate(ws: WebSocket, message: string) {
-  ws.send(JSON.stringify({ type: "error", message: message }));
-  ws.close();
-}
-
-export class Connection {
-  ws: WebSocket;
-  session: Session | undefined;
-  answers: string[] | undefined;
-
-  responseMiliseconds: number = 0;
-  lastPing: number = 0;
-  missedPing: number = 0;
-
-  constructor(ws: WebSocket) {
-    this.ws = ws;
-    this.session = undefined;
-    this.answers = undefined;
-    this.registerCallbacks();
-  }
-
-  registerCallbacks() {
-    const connection = this;
-    const ws = this.ws;
-    ws.addEventListener("message", function message(event) {
-      try {
-        const data = event.data;
-        const json = JSON.parse(data.toString());
-        if (!json.type) {
-          return terminate(ws, "No message type.");
-        }
-        if (json.type === "connect") {
-          if (!json.session) {
-            return terminate(ws, "No session id.");
-          }
-          const session = get(json.session);
-          if (!session) {
-            return terminate(ws, "Session not found.");
-          }
-          if (connection.session) {
-            connection.session.removeConnection(connection);
-          }
-          connection.session = session;
-          if (json.secret) {
-            if (json.secret === session.secret) {
-              session.setHost(connection);
-            } else {
-              return terminate(ws, "Wrong Secret");
-            }
-          } else {
-            session.addConnection(connection);
-          }
-        }
-        if (json.type === "ping") {
-          return ws.send(JSON.stringify({ type: "pong" }));
-        }
-        if (json.type === "pong") {
-          connection.responseMiliseconds =
-            performance.now() - connection.lastPing;
-          connection.missedPing = 0;
-        }
-        if (json.type === "quiz") {
-          if (!connection.session) {
-            return terminate(ws, "The client is not connected to a session.");
-          } else if (connection.session.host !== connection) {
-            return terminate(ws, "The client is not the host of the session.");
-          } else {
-            connection.session.setQuiz(json.quiz);
-          }
-        }
-        if (json.type === "evaluate") {
-          if (!connection.session) {
-            return terminate(ws, "The client is not connected to a session.");
-          } else if (connection.session.host !== connection) {
-            return terminate(ws, "The client is not the host of the session.");
-          } else {
-            connection.session.evaluate();
-          }
-        }
-        if (json.type === "answer") {
-          if (!json.answer) {
-            return terminate(ws, "No answer given");
-          } else {
-            if (!Array.isArray(json.answer)) {
-              return terminate(ws, "Answers are not an array");
-            }
-            if (connection.session) {
-              connection.session.addAnswer(connection, json.answer);
-              connection.session.sendQuizStateToHost(undefined);
-            }
-          }
-        }
-      } catch (error) {
-        console.error(event);
-        console.error(error);
-      }
-    });
-    ws.addEventListener("close", function close(data) {
-      if (connection.session) {
-        connection.session.removeConnection(connection);
-      }
-    });
-  }
-
-  resetQuiz(quiz: Quiz) {
-    this.answers = undefined;
-    this.ws.send(JSON.stringify({ type: "quiz", quiz: quiz }));
-  }
-
-  sendPing() {
-    if (this.missedPing > 2) {
-      console.log("connection lost");
-      this.ws.close();
-      return;
-    }
-    this.ws.send(
-      JSON.stringify({ type: "ping", ms: this.responseMiliseconds })
-    );
-    this.lastPing = performance.now();
-    this.missedPing++;
-  }
-}
-
-function sendHostReplacedMessage(connection: Connection) {
-  connection.ws.send(JSON.stringify({ type: "replaced" }));
-}
-
 export default class Session {
   id: string;
   secret: string;
-  host: Connection | undefined;
-  connections: Connection[];
+  host: SIOConnection | undefined;
+  connections: SIOConnection[];
   activeQuiz: Quiz | undefined;
-  answers: [Connection, string[]][];
+  answers: [SIOConnection, string[]][];
   result: any;
-  pinger: NodeJS.Timeout | undefined;
 
   constructor(id: string, secret: string) {
     this.id = id;
     this.secret = secret;
     this.connections = [];
     this.answers = [];
-    this.pinger = undefined;
   }
 
-  setHost(connection: Connection | undefined) {
+  setHost(connection: SIOConnection | undefined) {
     if (this.host) {
-      sendHostReplacedMessage(this.host);
+      this.host.sendReplacedMessage();
     }
     this.host = connection;
-    this.startPing();
   }
 
-  startPing() {
-    const session = this;
-    this.pinger = setInterval(() => {
-      if (session.host) {
-        session.host.sendPing();
-      } else {
-        clearInterval(session.pinger);
-      }
-    }, 1000);
-  }
-
-  sendToClients(message: any) {
+  broadcast(event: string, message: any) {
     for (const connection of this.connections) {
-      connection.ws.send(JSON.stringify(message));
+      connection.socket.emit(event, message);
     }
   }
 
-  addConnection(connection: Connection) {
+  attach(connection: SIOConnection) {
     this.connections.push(connection);
-    connection.ws.send(
-      JSON.stringify({
-        type: "sessionchange",
-        operation: "connect",
-        value: this.id,
-      })
-    );
+    connection.sendAttachedMessage(this.id);
     if (this.activeQuiz) {
-      connection.ws.send(
-        JSON.stringify({ type: "quiz", quiz: this.activeQuiz })
-      );
+      connection.sendQuiz(this.activeQuiz);
     }
-    if (this.host) {
-      this.sendQuizStateToHost(undefined);
-    }
+    this.sendQuizStateToHost(undefined);
   }
 
-  addAnswer(connection: Connection, answer: string[]) {
+  addAnswer(connection: SIOConnection, answer: string[]) {
     this.answers.push([connection, answer]);
-    connection.answers = answer;
+    this.sendQuizStateToHost(undefined);
   }
 
-  removeConnection(connection: Connection) {
+  detach(connection: SIOConnection) {
     if (this.host === connection) {
       console.log(`[${this.id}] The host has left the session!`);
-      if (this.pinger) {
-        clearInterval(this.pinger);
-        this.pinger = undefined;
-      }
+      this.host = undefined;
+      return;
     }
     const index = this.connections.indexOf(connection);
     if (index > -1) {
       const connection = this.connections.splice(index, 1)[0];
-      if (connection.ws.readyState === connection.ws.OPEN) {
-        connection.ws.send(
-          JSON.stringify({
-            type: "sessionchange",
-            operation: "disconnect",
-            value: this.id,
-          })
-        );
-      }
+      connection.close();
     }
+    this.sendQuizStateToHost(undefined);
   }
 
   sendQuizStateToHost(result: any) {
-    let done = 0;
-    for (const connection of this.connections) {
-      if (connection.answers) {
-        done++;
-      }
-    }
     if (this.host) {
-      const state = {
-        type: this.activeQuiz?.type,
-        connections: this.connections.length,
-        done: done,
-        result: result,
-      };
-      this.host.ws.send(JSON.stringify({ type: "state", state: state }));
+      let done = 0;
+      for (const connection of this.connections) {
+        if (connection.answers) {
+          done++;
+        }
+      }
+      this.host.sendState(this.connections.length, done, result);
     }
   }
 
@@ -270,12 +106,14 @@ export default class Session {
     this.activeQuiz = quiz;
     this.answers = [];
     for (const connection of this.connections) {
-      connection.resetQuiz(quiz);
+      connection.resetAnswers();
+      connection.sendQuiz(quiz);
     }
+    this.sendQuizStateToHost(undefined);
   }
 
-  evaluateChoiceQuiz(): [Connection[], any] {
-    const winners: Connection[] = [];
+  evaluateChoiceQuiz(): [SIOConnection[], any] {
+    const winners: SIOConnection[] = [];
     const result: any = {};
 
     if (!this.activeQuiz) {
@@ -323,8 +161,8 @@ export default class Session {
     return [winners, result];
   }
 
-  evaluateFreeQuiz(): [Connection[], any] {
-    const winners: Connection[] = [];
+  evaluateFreeQuiz(): [SIOConnection[], any] {
+    const winners: SIOConnection[] = [];
     const result: any[] = [];
     const correctAnswers = [];
     if (!this.activeQuiz) {
@@ -360,8 +198,8 @@ export default class Session {
     return [winners, result];
   }
 
-  evaluateSelectionQuiz(): [Connection[], any] {
-    const winners: Connection[] = [];
+  evaluateSelectionQuiz(): [SIOConnection[], any] {
+    const winners: SIOConnection[] = [];
     const result: any = [];
     const correctAnswers = [];
     if (!this.activeQuiz) {
@@ -395,8 +233,8 @@ export default class Session {
     return [winners, result];
   }
 
-  evaluateAssignmentQuiz(): [Connection[], any] {
-    let winners: Connection[] = [];
+  evaluateAssignmentQuiz(): [SIOConnection[], any] {
+    let winners: SIOConnection[] = [];
     let result: any = [];
     if (!this.activeQuiz) {
       return [[], undefined];
@@ -460,9 +298,8 @@ export default class Session {
     if (!this.activeQuiz) {
       return;
     }
-    let winners: Connection[] = [];
+    let winners: SIOConnection[] = [];
     let result: any = undefined;
-
     if (this.activeQuiz.type === "choice") {
       [winners, result] = this.evaluateChoiceQuiz();
     } else if (this.activeQuiz.type === "freetext") {
@@ -473,18 +310,18 @@ export default class Session {
       [winners, result] = this.evaluateAssignmentQuiz();
     }
     for (const connection of this.connections) {
-      connection.ws.send(JSON.stringify({ type: "done" }));
+      connection.sendDone();
     }
     if (winners.length > 0) {
       const random = Math.floor(Math.random() * winners.length);
       const winner = winners.splice(random, 1)[0];
-      winner.ws.send(JSON.stringify({ type: "winner" }));
+      winner.sendWinner();
     }
     this.sendQuizStateToHost(result);
     // Reset internal state
     this.activeQuiz = undefined;
     for (const connection of this.connections) {
-      connection.answers = undefined;
+      connection.resetAnswers();
     }
   }
 }

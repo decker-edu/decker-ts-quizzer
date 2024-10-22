@@ -24,17 +24,50 @@ textarea, input, button, select {
 #connect-area input {
   box-sizing: border-box;
   text-align: center;
-  width: 50vw;
+  width: 75vw;
   height: 20vh;
-  font-size: 15vh;
-  line-height: 15vh;
+  font-size: 15vmin;
+  line-height: 15vmin;
 }
 
 #connect-area button {
-  width: 50vw;
+  width: 75vw;
   height: 20vh;
-  font-size: 15vh;
-  line-height: 15vh;
+  font-size: 15vmin;
+  line-height: 15vmin;
+}
+
+#client-area {
+  width: 100%;
+  height: 100%;
+}
+
+:is(.wait-container, .done-container) {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  width: 100%;
+  height: 100%;
+  background-color: #0680ff;
+}
+
+:is(.wait-container, .done-container) span {
+  display: block;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%);
+  color: #ffe33f;
+  font-size: 4vmin;
+  font-weight: bold;
+  text-shadow:
+    -1px -1px 0 black,
+     1px  1px 0 black,
+    -1px  1px 0 black,
+     1px -1px 0 black;
+  transform-origin: 50% 50%;
+  white-space: nowrap;
 }
 
 #menu-button {

@@ -30,10 +30,10 @@ let port = location.port;
 
 const target = `${protocol}//${hostname}:${port}${config.subroute}/api/websocket`;
 console.log(target);
-export const connection = new WebSocket(target);
+export let webSocket = new WebSocket(target);
 
 export function sendAnswers(answers) {
-  connection.send(JSON.stringify({ type: "answer", answer: answers }));
+  webSocket.send(JSON.stringify({ type: "answer", answer: answers }));
 }
 
 function getSessionID() {
@@ -45,7 +45,7 @@ function getSessionID() {
 }
 
 function connect(session) {
-  connection.send(JSON.stringify({ type: "connect", session: session }));
+  webSocket.send(JSON.stringify({ type: "connect", session: session }));
 }
 
 function connectByButton() {
@@ -65,9 +65,9 @@ function hideConnectInput() {
   container.setAttribute("hidden", "");
 }
 
-connection.addEventListener("open", async (event) => {
+webSocket.addEventListener("open", async (event) => {
   clearClientArea();
-  setInterval(() => ping(connection), 1000);
+  setInterval(() => ping(webSocket), 1000);
   const session = getSessionID();
   if (session) {
     connect(session);
@@ -83,6 +83,7 @@ function clearClientArea() {
 }
 
 export async function handleMessage(event) {
+  console.log(event);
   try {
     const json = JSON.parse(event.data);
     if (json.type === "error") {
@@ -138,7 +139,7 @@ export async function handleMessage(event) {
       }
     }
     if (json.type === "ping") {
-      connection.send(JSON.stringify({ type: "pong" }));
+      webSocket.send(JSON.stringify({ type: "pong" }));
     }
     if (json.type === "pong") {
       pingCount = 0;
@@ -150,10 +151,11 @@ export async function handleMessage(event) {
   }
 }
 
-connection.addEventListener("message", handleMessage);
+webSocket.addEventListener("message", handleMessage);
 
-connection.addEventListener("close", (event) => {
-  console.log("Websocket: Closed");
+webSocket.addEventListener("close", (event) => {
+  console.error("Connection closed.");
+  webSocket = null;
 });
 
 const dialog = document.getElementById("share-dialog");

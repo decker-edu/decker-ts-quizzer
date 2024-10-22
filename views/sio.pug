@@ -1,0 +1,22 @@
+extends layout
+
+block styles
+  link(rel='stylesheet', href='./stylesheets/client.css')
+
+block scripts
+  script(src="./socket.io/socket.io.js")
+  script(type="module", src="./javascripts/sio-client.mjs") 
+
+block content
+  button#menu-button(onclick="openDialog()")
+    svg(width="32" height="32" stroke-linecap="round" xmlns="http://www.w3.org/2000/svg")
+      path(d="M 0.0,4.0 h 32.0 M 0.0,16.0 h 32.0 M 0.0,28.0 h 32.0")
+  div#connect-area
+    input#session-id(type="text" placeholder="Session ID")
+    button(type="button" onclick="moduleConnect()") Connect
+  div#client-area
+  dialog#share-dialog
+    p
+      span Session ID: 
+      span#menu-session-label
+    canvas#menu-qr-code

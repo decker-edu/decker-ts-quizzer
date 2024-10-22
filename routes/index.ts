@@ -23,6 +23,10 @@ router.get("/", function (req: Request, res: Response, next: NextFunction) {
   return res.render("index", { title: "Quizzer" });
 });
 
+router.get("/sio", function (req: Request, res: Response, next: NextFunction) {
+  return res.render("sio", { title: "Quizzer" });
+});
+
 router.get("/test", function (req: Request, res: Response, next: NextFunction) {
   return res.render("test", { title: "Quizzer" });
 });
@@ -30,7 +34,7 @@ router.get("/test", function (req: Request, res: Response, next: NextFunction) {
 router.get(
   "/client",
   function (req: Request, res: Response, next: NextFunction) {
-    return res.render("client", { title: "Quizzer Client" });
+    return res.render("sio", { title: "Quizzer Client" });
   }
 );
 
