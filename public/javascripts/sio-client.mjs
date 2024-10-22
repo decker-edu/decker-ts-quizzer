@@ -8,7 +8,14 @@ import bwip from "./bwip.js";
 
 const clientArea = document.getElementById("client-area");
 
-export let webSocket = io();
+const url = new URL(window.location);
+const prefix = url.href.split("/client").shift();
+console.log(prefix);
+const connectURL = new URL(prefix);
+
+export let webSocket = io(`${connectURL.protocol}//${connectURL.host}`, {
+  path: connectURL.pathname + "socket.io",
+});
 
 export function sendAnswers(answers) {
   webSocket.emit("answer", answers);
