@@ -1,26 +1,27 @@
-.selection-quiz p {
-  text-align: center;
-  font-size: 3rem;
-}
-
 .selection-quiz .select-wrapper {
   --select-text-color: black;
-  display: inline-grid;
+  height: 12vmin;
+  display: grid;
   grid-template-areas: "select";
-  background-color: #fee08b;
-  border: 1px solid black;  
-  border-radius: 0.25rem;
+  background-color: var(--widget-background-color);
+  border: var(--widget-border-width) solid var(--widget-border-color);
+  border-radius: var(--widget-border-radius);
   margin: 0;
   align-items: center;
 }
 
-.selection-quiz .select-wrapper:focus-within {
-  background-color: #fdae61;
-  border: 1px solid #f46d43;
+.selection-quiz .select-wrapper:hover {
+  background-color: var(--widget-hover-color);
 }
 
-.selection-quiz select {
+.selection-quiz .select-wrapper:focus-within {
+  background-color: var(--widget-hover-color);
+}
+
+.selection-quiz .select-wrapper select {
   appearance: none;
+  height: 100%;
+  line-height: 12vmin;
   z-index: 2;
   padding: 0 1.5em 0 0.25em;
   background-color: transparent;
@@ -29,14 +30,21 @@
   grid-area: select;
 }
 
+.selection-quiz .select-wrapper select:active {
+  border: none;
+}
+
+.selection-quiz .select-wrapper select:focus {
+  border: none;
+}
+
 .selection-quiz select:disabled {
-  color: var(--select-text-color);
   cursor: default;
 }
 
 .selection-quiz .select-wrapper::after {
   content: "";
-  z-index: 1;
+  z-index: 4;
   width: 0.8em;
   height: 0.5em;
   margin-right: 0.25em;

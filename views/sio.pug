@@ -9,14 +9,12 @@ block scripts
 
 block content
   button#menu-button(onclick="openDialog()")
-    svg(width="32" height="32" stroke-linecap="round" xmlns="http://www.w3.org/2000/svg")
-      path(d="M 0.0,4.0 h 32.0 M 0.0,16.0 h 32.0 M 0.0,28.0 h 32.0")
+    span.fa-solid.fa-share-from-square
   div#connect-area
-    input#session-id(type="text" placeholder="Session ID")
-    button(type="button" onclick="moduleConnect()") Connect
+    input#session-id(type="text" placeholder="")
+    button#connect-button(type="button" onclick="moduleConnect()") 
   div#client-area
   dialog#share-dialog
     p
-      span Session ID: 
       span#menu-session-label
     canvas#menu-qr-code

@@ -5,6 +5,9 @@ import {
   createDoneInterface,
 } from "./components.mjs";
 import bwip from "./bwip.js";
+import localization from "./localization.mjs";
+
+const l10n = localization(navigator.language);
 
 const clientArea = document.getElementById("client-area");
 
@@ -41,13 +44,13 @@ function attachByButton() {
 window.moduleConnect = attachByButton;
 
 function showConnectInput() {
-  const container = document.getElementById("connect-area");
-  container.removeAttribute("hidden");
+  const root = document.documentElement;
+  root.classList.remove("connected");
 }
 
 function hideConnectInput() {
-  const container = document.getElementById("connect-area");
-  container.setAttribute("hidden", "");
+  const root = document.documentElement;
+  root.classList.add("connected");
 }
 
 webSocket.on("connect", (event) => {
@@ -91,14 +94,16 @@ webSocket.on("winner", () => {
 
 webSocket.on("done", () => {
   clearClientArea();
-  clientArea.appendChild(createDoneInterface());
+  const doneElement = createDoneInterface();
+  clientArea.appendChild(doneElement);
 });
 
 webSocket.on("attached", (id) => {
   hideConnectInput();
 
   clearClientArea();
-  clientArea.appendChild(createWaitInterface());
+  const doneElement = createWaitInterface();
+  clientArea.appendChild(doneElement);
 
   let url = new URL(window.location);
   url.search = `session=${id}`;
@@ -109,13 +114,13 @@ webSocket.on("attached", (id) => {
   bwip.toCanvas(canvas, {
     bcid: "qrcode",
     text: window.location.toString(),
-    scale: 16,
+    scale: 8,
     includetext: true,
     textxalign: "center",
     eclevel: "L",
   });
   const label = document.getElementById("menu-session-label");
-  label.innerText = id;
+  label.innerText = l10n.sessionLabel.replace(/\{0\}/g, id);
 });
 
 const dialog = document.getElementById("share-dialog");
@@ -127,3 +132,9 @@ window.openDialog = () => {
   const dialog = document.getElementById("share-dialog");
   dialog.showModal();
 };
+
+const session_input = document.getElementById("session-id");
+session_input.placeholder = l10n.sessionInput;
+
+const connect_button = document.getElementById("connect-button");
+connect_button.innerText = l10n.connectLabel;

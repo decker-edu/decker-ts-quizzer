@@ -16,7 +16,8 @@ export default class SIOConnection {
       if (
         reason === "server namespace disconnect" ||
         reason === "client namespace disconnect" ||
-        reason === "server shutting down"
+        reason === "server shutting down" ||
+        reason === "transport close"
       ) {
         if (this.session) {
           this.session.detach(connection);
