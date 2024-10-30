@@ -12,9 +12,10 @@ const l10n = localization(navigator.language);
 const clientArea = document.getElementById("client-area");
 
 const url = new URL(window.location);
-const prefix = url.href.split("/client").shift();
-console.log(prefix);
+const prefix = url.href.split("client").shift();
 const connectURL = new URL(prefix);
+
+console.log(connectURL);
 
 export let webSocket = io(`${connectURL.protocol}//${connectURL.host}`, {
   path: connectURL.pathname + "socket.io",
