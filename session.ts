@@ -123,8 +123,7 @@ export default class Session {
     }
     const index = this.connections.indexOf(connection);
     if (index > -1) {
-      const connection = this.connections.splice(index, 1)[0];
-      connection.close();
+      this.connections.splice(index, 1)[0];
     }
     this.sendQuizStateToHost(undefined);
   }

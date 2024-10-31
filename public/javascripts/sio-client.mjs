@@ -72,6 +72,11 @@ function clearClientArea() {
 
 webSocket.on("error", (message) => {
   console.error(message);
+  const popup = document.createElement("div");
+  popup.className = "message-popup error";
+  popup.innerText = message;
+  document.body.appendChild(popup);
+  setTimeout(() => popup.remove(), 2000);
 });
 
 webSocket.on("quiz", (quiz) => {

@@ -34,7 +34,6 @@ io.on("connection", (socket) => {
   if (socket.recovered) {
     const connection = connections.get(socket.id);
     if (connection) {
-      connection.reconnect();
     }
   } else {
     const connection = new SIOConnection(socket);

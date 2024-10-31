@@ -1,6 +1,5 @@
 import { Socket } from "socket.io";
 import Session, { Quiz, get as getSession } from "./session";
-import { connect } from "http2";
 
 export default class SIOConnection {
   socket: Socket;
@@ -16,8 +15,7 @@ export default class SIOConnection {
       if (
         reason === "server namespace disconnect" ||
         reason === "client namespace disconnect" ||
-        reason === "server shutting down" ||
-        reason === "transport close"
+        reason === "server shutting down"
       ) {
         if (this.session) {
           this.session.detach(connection);
@@ -28,6 +26,9 @@ export default class SIOConnection {
       callback();
     });
     this.socket.on("attach", (sessionID, secret) => {
+      if (this.session) {
+        this.session.detach(this);
+      }
       const session = getSession(sessionID);
       if (session) {
         this.session = session;
@@ -44,6 +45,7 @@ export default class SIOConnection {
       }
     });
     this.socket.on("quiz", (quiz) => {
+      this.socket.emit("error", "new quiz");
       if (this.session && this.session.host === connection) {
         this.session.setQuiz(quiz);
       } else {
@@ -59,18 +61,17 @@ export default class SIOConnection {
         this.socket.disconnect(true);
       }
     });
-    this.socket.on("answer", (answers) => {
+    this.socket.on("answer", (quizNumber, answers) => {
       if (this.session) {
+        const quiz = this.session.activeQuiz;
+        if (quiz && quiz.number !== quizNumber) {
+          this.socket.emit("error", "old quiz");
+          this.sendQuiz(quiz);
+        }
         this.answers = answers;
         this.session.addAnswer(connection, answers);
       }
     });
-  }
-
-  reconnect() {
-    if (this.session?.activeQuiz) {
-      this.sendQuiz(this.session.activeQuiz);
-    }
   }
 
   sendAttachedMessage(session: string) {
