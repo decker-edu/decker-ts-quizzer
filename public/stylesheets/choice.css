@@ -2,16 +2,16 @@
   flex-grow: 1;
   width: 66%;
   padding: 0.25em;
-  background-color: #eab700;
+  background-color: var(--widget-idle-color);
   border-radius: 0.5rem;
 }
 
 .choice-quiz button:hover:not(:disabled) {
-  background-color: #f5871f;
+  background-color: var(--widget-hover-color);
 }
 
 .choice-quiz button:active:not(:disabled) {
-  background-color: #c82829;
+  background-color: var(--widget-active-color);
   color: white;
 }
 

@@ -13,6 +13,7 @@ const german = {
   connectLabel: "Beitreten",
   submitLabel: "Absenden",
   selectionPlaceholder: "Auswählen ...",
+  unassigned: "Keine Zuweisung",
 };
 
 const english = {
@@ -22,4 +23,5 @@ const english = {
   connectLabel: "Connect",
   submitLabel: "Submit",
   selectionPlaceholder: "Choose ...",
+  unassigned: "Unassigned",
 };

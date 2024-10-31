@@ -7,6 +7,7 @@ const sessions = new Map<string, Session>();
 export type Quiz = {
   type: "choice" | "selection" | "freetext" | "assignment";
   choices: Choice[];
+  number: number;
 };
 
 export type Choice = {
@@ -75,6 +76,7 @@ export default class Session {
   host: SIOConnection | undefined;
   connections: SIOConnection[];
   activeQuiz: Quiz | undefined;
+  quizNumber: number;
   answers: [SIOConnection, string[]][];
   result: any;
 
@@ -83,6 +85,7 @@ export default class Session {
     this.secret = secret;
     this.connections = [];
     this.answers = [];
+    this.quizNumber = 0;
   }
 
   setHost(connection: SIOConnection | undefined) {
@@ -139,8 +142,9 @@ export default class Session {
   }
 
   setQuiz(quiz: Quiz) {
-    console.log(quiz);
+    this.quizNumber = this.quizNumber + 1;
     this.activeQuiz = quiz;
+    this.activeQuiz.number = this.quizNumber;
     this.answers = [];
     for (const connection of this.connections) {
       connection.resetAnswers();
@@ -176,7 +180,6 @@ export default class Session {
     for (const [connection, answers] of this.answers) {
       /* A user can win if their answer includes all correct values and only the correct values */
       let canWin: boolean = true;
-      console.log(answers);
       for (const answer of answers) {
         const item = result.items.find((item) => item.letter === answer);
         if (item) {
@@ -300,7 +303,6 @@ export default class Session {
 
     /* Each choice represents an assignable object and its reason is the "correct" category */
     for (const choice of choices) {
-      console.log(choice);
       for (const category of categories) {
         result.assignments.push({
           letter: choice.letter,
@@ -338,7 +340,6 @@ export default class Session {
         winners.push(connection);
       }
     }
-    console.log(result);
     return [winners, result];
   }
 

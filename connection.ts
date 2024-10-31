@@ -67,6 +67,12 @@ export default class SIOConnection {
     });
   }
 
+  reconnect() {
+    if (this.session?.activeQuiz) {
+      this.sendQuiz(this.session.activeQuiz);
+    }
+  }
+
   sendAttachedMessage(session: string) {
     this.socket.emit("attached", session);
   }

@@ -6,23 +6,77 @@
   align-items: center;
 }
 
+.assignment-quiz .select-wrapper {
+  --select-text-color: black;
+  height: 12vmin;
+  display: grid;
+  grid-template-areas: "select";
+  background-color: var(--widget-idle-color);
+  border: var(--widget-border-width) solid var(--widget-border-color);
+  border-radius: var(--widget-border-radius);
+  margin: 0;
+  align-items: center;
+}
+
+.assignment-quiz .select-wrapper:hover {
+  background-color: var(--widget-hover-color);
+}
+
+.assignment-quiz .select-wrapper:focus-within {
+  background-color: var(--widget-hover-color);
+}
+
+.assignment-quiz .select-wrapper select {
+  appearance: none;
+  height: 100%;
+  line-height: 12vmin;
+  z-index: 2;
+  padding: 0 1.5em 0 0.25em;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  grid-area: select;
+}
+
+.assignment-quiz .select-wrapper select:active {
+  border: none;
+}
+
+.assignment-quiz .select-wrapper select:focus {
+  border: none;
+}
+
+.assignment-quiz select:disabled {
+  cursor: default;
+}
+
+.assignment-quiz .select-wrapper::after {
+  content: "";
+  z-index: 4;
+  width: 0.8em;
+  height: 0.5em;
+  margin-right: 0.25em;
+  background-color: var(--select-text-color);
+  clip-path: polygon(100% 0%, 0 0%, 50% 100%);
+  grid-area: select;
+  justify-self: end;
+}
+
+.assignment-quiz .select-wrapper:has(:disabled) {
+  --select-text-color: rgba(16,16,16,0.3);
+}
+
+
 .assignment-quiz .answer-area .assignment-block > p {
   margin: unset;
   padding: 0.25em;
   border: 2px solid black;
   background: #cccccc;
-  border-radius: 0.25rem;
+  border-radius: var(--widget-border-radius);
 }
 
 .assignment-quiz .answer-area .assignment-block > span {
   margin-left: 0.5em;
   margin-right: 0.5em;
   align-content: center;
-}
-
-.assignment-quiz .answer-area .assignment-block > select {
-  padding: 0.25em;
-  border: 2px solid black;
-  border-radius: 0.25rem;
-  background-color: #fee08b;
 }

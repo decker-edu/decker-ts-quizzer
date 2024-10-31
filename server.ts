@@ -6,6 +6,8 @@ import SIOConnection from "./connection";
 
 const debug = Debug("decker-ts-quizzer");
 
+const connections = new Map<string, SIOConnection>();
+
 /**
  * Get port from environment and store in Express.
  */
@@ -29,7 +31,15 @@ const io = new Server(server, {
 });
 
 io.on("connection", (socket) => {
-  const connection = new SIOConnection(socket);
+  if (socket.recovered) {
+    const connection = connections.get(socket.id);
+    if (connection) {
+      connection.reconnect();
+    }
+  } else {
+    const connection = new SIOConnection(socket);
+    connections.set(socket.id, connection);
+  }
 });
 
 /* old websocket code

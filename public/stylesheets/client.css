@@ -8,12 +8,12 @@
 :root {
   --background-color: #ffffff;
   --widget-text-color: #000000;
-  --widget-idle-color: #ffffff;
-  --widget-hover-color: #eeeeee;
-  --widget-active-color: #dddddd;
+  --widget-idle-color: #eab700;
+  --widget-hover-color: #f5871f;
+  --widget-active-color: #c82829;
   --widget-border-width: 3px;
   --widget-border-color: #000000;
-  --widget-border-radius: 0.5rem;
+  --widget-border-radius: 0.25rem;
   --widget-disabled-color: #cccccc;
   --disabled-text-color: #444444;
   --submit-idle-color: #84b819;

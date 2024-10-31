@@ -38,11 +38,13 @@ export default class Renderer {
       block.className = "assignment-block";
       const letter = document.createElement("p");
       letter.innerHTML = option.letter;
+      const wrapper = document.createElement("div");
+      wrapper.className = "select-wrapper";
       const select = document.createElement("select");
       const defaultOption = document.createElement("option");
       defaultOption.selected = true;
       defaultOption.value = 0;
-      defaultOption.text = "Unassigned";
+      defaultOption.text = l10n.unassigned;
       select.appendChild(defaultOption);
       for (const category of categories) {
         const option = document.createElement("option");
@@ -53,9 +55,10 @@ export default class Renderer {
       select.letter = option.letter;
       const arrow = document.createElement("span");
       arrow.className = "fa-solid fa-arrow-right";
+      wrapper.appendChild(select);
       block.appendChild(letter);
       block.appendChild(arrow);
-      block.appendChild(select);
+      block.appendChild(wrapper);
       boxes.push(select);
       container.answerArea.appendChild(block);
     }
@@ -69,6 +72,7 @@ export default class Renderer {
         answers.push(answer);
         box.disabled = true;
       }
+      container.submitButton.disabled = true;
       sendAnswers(answers);
     });
     parent.appendChild(container);
