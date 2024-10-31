@@ -93,7 +93,7 @@ export default class SIOConnection {
 
   sendState(connections: number, done: number, result: any) {
     if (!result) {
-      this.socket.emit("state", connections, done);
+      this.socket.emit("state", connections, done, undefined);
     } else {
       this.socket.emit("state", connections, done, result);
     }
