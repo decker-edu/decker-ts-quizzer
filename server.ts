@@ -25,6 +25,10 @@ server.on("error", onError);
 server.on("listening", onListening);
 
 const io = new Server(server, {
+  connectionStateRecovery: {
+    maxDisconnectionDuration: 5 * 60 * 1000,
+    skipMiddlewares: true,
+  },
   cors: {
     origin: "*",
   },
