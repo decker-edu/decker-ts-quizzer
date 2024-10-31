@@ -36,12 +36,13 @@ const io = new Server(server, {
 
 io.on("connection", (socket) => {
   if (socket.recovered) {
-    console.log("recovered connection");
+    console.log("recovered connection: ", socket.id);
     const connection = connections.get(socket.id);
     if (connection) {
       connection.sendNotification("reconnected");
     }
   } else {
+    console.log("new connection: ", socket.id);
     const connection = new SIOConnection(socket);
     connections.set(socket.id, connection);
   }
