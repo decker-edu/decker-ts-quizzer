@@ -22,7 +22,7 @@ export let webSocket = io(`${connectURL.protocol}//${connectURL.host}`, {
 });
 
 export function sendAnswers(answers) {
-  webSocket.emit("answer", answers);
+  webSocket.emit("answer", currentQuiz.number, answers);
 }
 
 function getSessionID() {
@@ -94,7 +94,10 @@ webSocket.on("disconnect", (reason) => {
   postNotification(reason, "error");
 });
 
+let currentQuiz = undefined;
+
 webSocket.on("quiz", (quiz) => {
+  currentQuiz = quiz;
   clearClientArea();
   if (quiz.type === "choice") {
     quizRenderer.renderChoiceQuiz(clientArea, quiz);

@@ -87,7 +87,6 @@ export default class SIOConnection {
   }
 
   sendQuiz(quiz: Quiz) {
-    this.socket.emit("notification", "new quiz");
     this.socket.emit("quiz", quiz);
   }
 
