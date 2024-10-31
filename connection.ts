@@ -15,7 +15,8 @@ export default class SIOConnection {
       if (
         reason === "server namespace disconnect" ||
         reason === "client namespace disconnect" ||
-        reason === "server shutting down"
+        reason === "server shutting down" ||
+        reason === "transport close"
       ) {
         if (this.session) {
           this.session.detach(connection);
@@ -45,7 +46,6 @@ export default class SIOConnection {
       }
     });
     this.socket.on("quiz", (quiz) => {
-      this.socket.emit("error", "new quiz");
       if (this.session && this.session.host === connection) {
         this.session.setQuiz(quiz);
       } else {
@@ -82,7 +82,12 @@ export default class SIOConnection {
     this.socket.emit("replaced");
   }
 
+  sendNotification(message: string) {
+    this.socket.emit("notification", message);
+  }
+
   sendQuiz(quiz: Quiz) {
+    this.socket.emit("notification", "new quiz");
     this.socket.emit("quiz", quiz);
   }
 

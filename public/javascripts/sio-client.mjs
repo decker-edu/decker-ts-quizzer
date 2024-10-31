@@ -70,13 +70,28 @@ function clearClientArea() {
   }
 }
 
-webSocket.on("error", (message) => {
-  console.error(message);
+function postNotification(message, cls) {
   const popup = document.createElement("div");
-  popup.className = "message-popup error";
+  popup.classList.add("message-popup");
+  if (cls) {
+    popup.classList.add(cls);
+  }
   popup.innerText = message;
   document.body.appendChild(popup);
   setTimeout(() => popup.remove(), 2000);
+}
+
+webSocket.on("error", (message) => {
+  console.error(message);
+  postNotification(message, "error");
+});
+
+webSocket.on("notification", (message) => {
+  postNotification(message);
+});
+
+webSocket.on("disconnect", (reason) => {
+  postNotification(reason, "error");
 });
 
 webSocket.on("quiz", (quiz) => {

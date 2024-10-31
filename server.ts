@@ -32,8 +32,10 @@ const io = new Server(server, {
 
 io.on("connection", (socket) => {
   if (socket.recovered) {
+    console.log("recovered connection");
     const connection = connections.get(socket.id);
     if (connection) {
+      connection.sendNotification("reconnected");
     }
   } else {
     const connection = new SIOConnection(socket);
