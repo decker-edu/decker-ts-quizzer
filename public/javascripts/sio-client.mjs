@@ -55,18 +55,33 @@ function hideConnectInput() {
 }
 
 webSocket.on("connect", (event) => {
-  clearClientArea();
-  const session = getSessionID();
-  if (session) {
-    attach(session);
-  } else {
-    showConnectInput();
+  if (!webSocket.recovered) {
+    clearClientArea();
+    const session = getSessionID();
+    if (session) {
+      attach(session);
+    } else {
+      showConnectInput();
+    }
   }
 });
 
 function clearClientArea() {
   while (clientArea.firstElementChild) {
     clientArea.removeChild(clientArea.firstElementChild);
+  }
+}
+
+function renderQuiz(quiz) {
+  clearClientArea();
+  if (quiz.type === "choice") {
+    quizRenderer.renderChoiceQuiz(clientArea, quiz);
+  } else if (quiz.type === "freetext") {
+    quizRenderer.renderTextQuiz(clientArea, quiz);
+  } else if (quiz.type === "selection") {
+    quizRenderer.renderSelectQuiz(clientArea, quiz);
+  } else if (quiz.type === "assignment") {
+    quizRenderer.renderAssignmentQuiz(clientArea, quiz);
   }
 }
 
@@ -97,16 +112,9 @@ webSocket.on("disconnect", (reason) => {
 let currentQuiz = undefined;
 
 webSocket.on("quiz", (quiz) => {
-  currentQuiz = quiz;
-  clearClientArea();
-  if (quiz.type === "choice") {
-    quizRenderer.renderChoiceQuiz(clientArea, quiz);
-  } else if (quiz.type === "freetext") {
-    quizRenderer.renderTextQuiz(clientArea, quiz);
-  } else if (quiz.type === "selection") {
-    quizRenderer.renderSelectQuiz(clientArea, quiz);
-  } else if (quiz.type === "assignment") {
-    quizRenderer.renderAssignmentQuiz(clientArea, quiz);
+  if (!currentQuiz || currentQuiz.number !== quiz.number) {
+    currentQuiz = quiz;
+    renderQuiz(quiz);
   }
 });
 

@@ -39,6 +39,9 @@ io.on("connection", (socket) => {
     console.log("recovered connection: ", socket.id);
     const connection = connections.get(socket.id);
     if (connection) {
+      if (connection.session && connection.session.activeQuiz) {
+        connection.sendQuiz(connection.session.activeQuiz);
+      }
       connection.sendNotification("reconnected");
     }
   } else {
