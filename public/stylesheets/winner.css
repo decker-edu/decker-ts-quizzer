@@ -14,7 +14,7 @@
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%);
+  transform: translate(-50%, -50%);
   color: #ffe33f;
   font-size: 4rem;
   font-weight: bold;
@@ -30,9 +30,9 @@
 
 @keyframes wiggle {
   0%,40%,100% {
-    transform: translate(-50%) rotate(-10deg);
+    transform: translate(-50%, -50%) rotate(-10deg);
   }
   20% {
-    transform: translate(-50%) rotate(10deg);
+    transform: translate(-50%, -50%) rotate(10deg);
   }
 }

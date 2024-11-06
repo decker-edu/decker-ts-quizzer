@@ -41,6 +41,28 @@ function attach(session) {
     if (error) {
       postNotification(error, "error");
     } else {
+      hideConnectInput();
+
+      clearClientArea();
+      const doneElement = createWaitInterface();
+      clientArea.appendChild(doneElement);
+
+      let url = new URL(window.location);
+      url.search = `session=${id}`;
+
+      history.replaceState({}, "", url);
+
+      const canvas = document.getElementById("menu-qr-code");
+      bwip.toCanvas(canvas, {
+        bcid: "qrcode",
+        text: window.location.toString(),
+        scale: 8,
+        includetext: true,
+        textxalign: "center",
+        eclevel: "L",
+      });
+      const label = document.getElementById("menu-session-label");
+      label.innerText = l10n.sessionLabel.replace(/\{0\}/g, id);
       postNotification(confirm);
     }
   });
