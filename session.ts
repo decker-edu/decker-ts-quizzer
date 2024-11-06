@@ -103,7 +103,6 @@ export default class Session {
 
   attach(connection: SIOConnection) {
     this.connections.push(connection);
-    connection.sendAttachedMessage(this.id);
     if (this.activeQuiz) {
       connection.sendQuiz(this.activeQuiz);
     }

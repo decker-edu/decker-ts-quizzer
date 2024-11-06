@@ -26,9 +26,15 @@ export default class SIOConnection {
     this.socket.on("ping", (callback) => {
       callback();
     });
-    this.socket.on("attach", (sessionID, secret) => {
+    this.socket.on("attach", (sessionID, secret, callback) => {
       if (this.session) {
         this.session.detach(this);
+      }
+      if (typeof secret === "function") {
+        callback = secret;
+      }
+      if (typeof callback !== "function") {
+        return;
       }
       const session = getSession(sessionID);
       if (session) {
@@ -36,21 +42,26 @@ export default class SIOConnection {
         if (secret) {
           if (this.session.secret === secret) {
             this.session.setHost(connection);
+            callback("host", null);
           } else {
-            this.socket.emit("error", "wrong secret");
-            this.socket.disconnect(true);
+            callback(null, "wrong secret");
           }
           return;
         }
         this.session.attach(connection);
+        callback("attached", null);
+      } else {
+        callback(null, "no session");
       }
     });
-    this.socket.on("quiz", (quiz) => {
+    this.socket.on("quiz", (quiz, callback) => {
       if (this.session && this.session.host === connection) {
         this.session.setQuiz(quiz);
       } else {
+        if (callback && typeof callback === "function") {
+          callback(null, "not host");
+        }
         this.socket.emit("error", "not host");
-        this.socket.disconnect(true);
       }
     });
     this.socket.on("evaluate", () => {
@@ -72,10 +83,6 @@ export default class SIOConnection {
         this.session.addAnswer(connection, answers);
       }
     });
-  }
-
-  sendAttachedMessage(session: string) {
-    this.socket.emit("attached", session);
   }
 
   sendReplacedMessage() {

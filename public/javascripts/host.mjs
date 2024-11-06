@@ -7,11 +7,9 @@ import {
   createTestSession,
 } from "./test.mjs";
 
-const url = new URL(window.location);
-const prefix = url.href.split("test").shift();
-const connectURL = new URL(prefix);
+const base = document.getElementsByTagName("base")[0];
 
-console.log(connectURL);
+const connectURL = new URL(base.href);
 
 export let socket = io(`${connectURL.protocol}//${connectURL.host}`, {
   path: connectURL.pathname + "socket.io",
@@ -42,6 +40,9 @@ function makeHostButtonsFunctional() {
   evalButton.addEventListener("click", () => {
     socket.emit("evaluate");
   });
+  const joinLink = document.getElementById("joinLink");
+  joinLink.href = `/${testSession.id}`;
+
   const buttons = [
     choiceButton,
     selectButton,
@@ -54,15 +55,36 @@ function makeHostButtonsFunctional() {
   }
 }
 
+socket.io.on("ping", () => {
+  addHostMessage("[INTERNAL] SOCKET.IO.PING");
+});
+
 socket.on("message", addHostMessage);
 
 socket.on("connect", async (event) => {
+  addHostMessage(`[CONNECTED]`);
   if (socket.recovered) {
+    addHostMessage(`[SOCKET RECOVERED]`);
     return;
   }
+  addHostMessage(`[NEW SOCKET]`);
   try {
-    await createTestSession();
-    socket.emit("attach", testSession.id, testSession.secret);
+    if (!testSession.id) {
+      addHostMessage(`[REQUEST NEW SESSION]`);
+      await createTestSession();
+    }
+    socket.emit(
+      "attach",
+      testSession.id,
+      testSession.secret,
+      (confirm, error) => {
+        if (error) {
+          addHostMessage(`[ATTACH ERROR] ${error}`);
+        } else {
+          addHostMessage(`[ATTACH CONFIRM] ${confirm}`);
+        }
+      }
+    );
     makeHostButtonsFunctional();
   } catch (error) {
     addHostMessage(`[ON CONNECT ERROR]: ${error}`);
@@ -99,9 +121,11 @@ window.closeSocket = function () {
 };
 
 export function addHostMessage(message) {
-  console.log(message);
   const log = document.getElementById("log");
   const div = document.createElement("div");
+  const timestamp = document.createElement("span");
+  timestamp.className = "timestamp";
+  timestamp.innerText = performance.now();
   div.innerText = message;
   log.appendChild(div);
 }

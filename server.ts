@@ -25,6 +25,8 @@ server.on("error", onError);
 server.on("listening", onListening);
 
 const io = new Server(server, {
+  pingInterval: 10000,
+  pingTimeout: 8000,
   connectionStateRecovery: {
     maxDisconnectionDuration: 5 * 60 * 1000,
     skipMiddlewares: true,

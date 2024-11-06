@@ -220,12 +220,12 @@ export async function createTestSession() {
       method: "POST",
     });
     const json = await response.json();
-    addHostMessage(`API: id: ${json.id} secret: ${json.secret}`);
+    addHostMessage(`[API] id: ${json.id} secret: ${json.secret}`);
     testSession.id = json.id;
     testSession.secret = json.secret;
   } catch (error) {
     console.error(error);
-    addHostMessage("API: Error");
+    addHostMessage("[API] Error");
     throw error;
   }
 }

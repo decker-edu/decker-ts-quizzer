@@ -11,10 +11,16 @@ const l10n = localization(navigator.language);
 
 const clientArea = document.getElementById("client-area");
 
-const url = new URL(window.location);
-const prefix = url.href.split("client").shift();
-const connectURL = new URL(prefix);
-
+const location = new URL(window.location);
+const pathname = location.pathname;
+console.log(pathname);
+const pathparts = pathname.split("/");
+console.log(pathparts);
+const id = pathparts.pop();
+console.log(pathparts);
+const path = pathparts.join("/");
+console.log(path);
+const connectURL = new URL(location.origin + path);
 console.log(connectURL);
 
 export let webSocket = io(`${connectURL.protocol}//${connectURL.host}`, {
@@ -26,6 +32,9 @@ export function sendAnswers(answers) {
 }
 
 function getSessionID() {
+  if (id !== "") {
+    return id;
+  }
   const params = new URLSearchParams(window.location.search);
   if (params.has("session")) {
     return params.get("session");
@@ -34,7 +43,13 @@ function getSessionID() {
 }
 
 function attach(session) {
-  webSocket.emit("attach", session);
+  webSocket.emit("attach", session, null, (confirm, error) => {
+    if (error) {
+      postNotification(error, "error");
+    } else {
+      postNotification(confirm);
+    }
+  });
 }
 
 function attachByButton() {
