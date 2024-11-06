@@ -48,8 +48,8 @@ export default class SIOConnection {
           }
           return;
         }
-        this.session.attach(connection);
         callback(sessionID, null);
+        this.session.attach(connection);
       } else {
         callback(null, "no session");
       }
