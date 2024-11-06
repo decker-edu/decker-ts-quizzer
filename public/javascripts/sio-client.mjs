@@ -60,7 +60,7 @@ function attach(session) {
         eclevel: "L",
       });
       const label = document.getElementById("menu-session-label");
-      label.innerText = l10n.sessionLabel.replace(/\{0\}/g, id);
+      label.innerText = l10n.sessionLabel.replace(/\{0\}/g, session);
     }
   });
 }
