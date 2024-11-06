@@ -37,7 +37,7 @@ function getSessionID() {
 }
 
 function attach(session) {
-  webSocket.emit("attach", session, null, (confirm, error) => {
+  webSocket.emit("attach", session, null, (session, error) => {
     if (error) {
       postNotification(error, "error");
     } else {
@@ -47,9 +47,7 @@ function attach(session) {
       const doneElement = createWaitInterface();
       clientArea.appendChild(doneElement);
 
-      let url = new URL(window.location);
-      url.search = `session=${id}`;
-
+      let url = new URL(base.href + session);
       history.replaceState({}, "", url);
 
       const canvas = document.getElementById("menu-qr-code");
@@ -63,7 +61,6 @@ function attach(session) {
       });
       const label = document.getElementById("menu-session-label");
       label.innerText = l10n.sessionLabel.replace(/\{0\}/g, id);
-      postNotification(confirm);
     }
   });
 }

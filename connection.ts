@@ -42,14 +42,14 @@ export default class SIOConnection {
         if (secret) {
           if (this.session.secret === secret) {
             this.session.setHost(connection);
-            callback("host", null);
+            callback(sessionID, null);
           } else {
             callback(null, "wrong secret");
           }
           return;
         }
         this.session.attach(connection);
-        callback("attached", null);
+        callback(sessionID, null);
       } else {
         callback(null, "no session");
       }
