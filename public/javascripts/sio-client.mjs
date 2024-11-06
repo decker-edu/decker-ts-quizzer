@@ -11,17 +11,11 @@ const l10n = localization(navigator.language);
 
 const clientArea = document.getElementById("client-area");
 
-const location = new URL(window.location);
-const pathname = location.pathname;
-console.log(pathname);
-const pathparts = pathname.split("/");
-console.log(pathparts);
-const id = pathparts.pop();
-console.log(pathparts);
-const path = pathparts.join("/");
-console.log(path);
-const connectURL = new URL(location.origin + path);
-console.log(connectURL);
+const base = document.getElementsByTagName("base")[0];
+
+const connectURL = new URL(base.href);
+
+let id = window.location.pathname.split("/").pop();
 
 export let webSocket = io(`${connectURL.protocol}//${connectURL.host}`, {
   path: connectURL.pathname + "socket.io",

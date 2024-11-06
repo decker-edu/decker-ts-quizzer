@@ -18,25 +18,27 @@ function randomString(length: number): string {
   return hash;
 }
 
-const base = "/";
+const base = "/t/";
 
 /* GET home page. */
 router.get("/", function (req: Request, res: Response, next: NextFunction) {
-  const xpath = req.headers;
-  return res.render("sio", { title: "Quizzer Client", base: base });
+  const xpath = req.headers['x-path'];
+  return res.render("sio", { title: "Quizzer Client", base: xpath ? xpath : base });
 });
 
 router.get(
   "/([a-z]|[0-9]){4}",
   function (req: Request, res: Response, next: NextFunction) {
-    return res.render("sio", { title: "Quizzer Client", base: base });
+    const xpath = req.headers['x-path'];
+    return res.render("sio", { title: "Quizzer Client", base: xpath ? xpath : base });
   }
 );
 
 router.get(
   "/internal",
   function (req: Request, res: Response, next: NextFunction) {
-    return res.render("test", { title: "Quizzer", base: base });
+    const xpath = req.headers['x-path'];
+    return res.render("test", { title: "Quizzer", base: xpath ? xpath : base });
   }
 );
 
