@@ -108,6 +108,7 @@
   border: none;
   background: transparent;
   cursor: pointer;
+  z-index: 64;
 }
 
 #menu-button:hover {
@@ -115,25 +116,6 @@
 }
 
 #menu-button:active {
-  color: darkgray;
-}
-
-#bookmark {
-  position: fixed;
-  color: black;
-  top: 0.5rem;
-  left: 0.5rem;
-  font-size: 2rem;
-  border: none;
-  background: transparent;
-  cursor: pointer;
-}
-
-#bookmark:hover {
-  color:lightgray;
-}
-
-#bookmark:active {
   color: darkgray;
 }
 
