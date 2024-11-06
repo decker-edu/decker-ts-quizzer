@@ -20,7 +20,7 @@ function randomString(length: number): string {
 
 /* GET home page. */
 router.get("/", function (req: Request, res: Response, next: NextFunction) {
-  return res.render("index", { title: "Quizzer" });
+  return res.render("sio", { title: "Quizzer" });
 });
 
 router.get("/sio", function (req: Request, res: Response, next: NextFunction) {

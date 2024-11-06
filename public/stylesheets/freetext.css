@@ -7,7 +7,6 @@
 }
 
 .text-quiz input[type="text"]:focus {
-    border: none;
-    outline: 2px solid #c82829;
+  border: var(--widget-border-width) solid #c82829;
+  outline: none;
 }
-

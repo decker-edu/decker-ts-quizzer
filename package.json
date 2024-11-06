@@ -4,9 +4,9 @@
   "private": true,
   "scripts": {
     "start": "node ./dist/server.js",
-    "prebuild": "rm -rf dist",
+    "prebuild": "shx rm -rf dist",
     "build": "tsc",
-    "postbuild": "cp -r ./views ./dist/views && cp -r ./public ./dist/public",
+    "postbuild": "shx cp -r ./views ./dist/views && shx cp -r ./public ./dist/public",
     "car": "npm run build && npm run start"
   },
   "dependencies": {

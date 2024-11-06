@@ -1,4 +1,3 @@
-import { handleMessage, webSocket } from "./client.mjs";
 import {
   testChoiceQuiz,
   testSelectQuiz,
@@ -8,84 +7,101 @@ import {
   createTestSession,
 } from "./test.mjs";
 
-import config from "./config.mjs";
+const url = new URL(window.location);
+const prefix = url.href.split("test").shift();
+const connectURL = new URL(prefix);
 
-function showHostButtons() {
+console.log(connectURL);
+
+export let socket = io(`${connectURL.protocol}//${connectURL.host}`, {
+  path: connectURL.pathname + "socket.io",
+});
+
+function makeHostButtonsFunctional() {
   const element = document.getElementById("host-buttons");
   if (!element) {
     return;
   }
-  element.removeAttribute("hidden");
-  const span = document.createElement("span");
-  span.innerText = `${testSession.id}, ${testSession.secret}`;
-  element.appendChild(span);
   const choiceButton = document.getElementById("choiceTestButton");
   choiceButton.addEventListener("click", () => {
-    host.send(JSON.stringify({ type: "quiz", quiz: testChoiceQuiz }));
+    socket.emit("quiz", testChoiceQuiz);
   });
   const selectButton = document.getElementById("selectTestButton");
   selectButton.addEventListener("click", () => {
-    host.send(JSON.stringify({ type: "quiz", quiz: testSelectQuiz }));
+    socket.emit("quiz", testSelectQuiz);
   });
   const freetextButton = document.getElementById("freetextTestButton");
   freetextButton.addEventListener("click", () => {
-    host.send(JSON.stringify({ type: "quiz", quiz: testTextQuiz }));
+    socket.emit("quiz", testTextQuiz);
   });
   const assignmentButton = document.getElementById("assignmentTestButton");
   assignmentButton.addEventListener("click", () => {
-    host.send(JSON.stringify({ type: "quiz", quiz: testAssignQuiz }));
+    socket.emit("quiz", testAssignQuiz);
   });
   const evalButton = document.getElementById("evaluateButton");
   evalButton.addEventListener("click", () => {
-    host.send(JSON.stringify({ type: "evaluate" }));
+    socket.emit("evaluate");
   });
+  const buttons = [
+    choiceButton,
+    selectButton,
+    freetextButton,
+    assignmentButton,
+    evalButton,
+  ];
+  for (const button of buttons) {
+    button.disabled = false;
+  }
 }
 
-const location = window.location;
-let protocol = "wss:";
-if (location.protocol === "http:") {
-  protocol = "ws:";
-}
-let hostname = location.hostname;
-let port = location.port;
+socket.on("message", addHostMessage);
 
-export const host = new WebSocket(
-  `${protocol}//${hostname}:${port}${config.subroute}/api/websocket`
-);
-
-host.addEventListener("message", handleMessage);
-
-host.addEventListener("open", async (event) => {
-  try {
-    await createTestSession();
-    host.send(
-      JSON.stringify({
-        type: "connect",
-        session: testSession.id,
-        secret: testSession.secret,
-      })
-    );
-    showHostButtons();
-  } catch (error) {
-    console.error(error);
+socket.on("connect", async (event) => {
+  if (socket.recovered) {
     return;
   }
-  if (webSocket.readyState !== webSocket.OPEN) {
-    webSocket.addEventListener("open", () => {
-      webSocket.send(
-        JSON.stringify({ type: "connect", session: testSession.id })
-      );
-    });
-  } else {
-    webSocket.send(
-      JSON.stringify({ type: "connect", session: testSession.id })
-    );
+  try {
+    await createTestSession();
+    socket.emit("attach", testSession.id, testSession.secret);
+    makeHostButtonsFunctional();
+  } catch (error) {
+    addHostMessage(`[ON CONNECT ERROR]: ${error}`);
+    return;
   }
 });
 
+socket.on("error", (message) => {
+  addHostMessage(`[ERROR] ${message}`);
+});
+
+socket.on("state", (connections, done, result) => {
+  if (result) {
+    addHostMessage(JSON.stringify(result, null, 2));
+  } else {
+    addHostMessage(`Connections: ${connections} Done: ${done}`);
+  }
+});
+
+socket.on("disconnect", (reason, details) => {
+  addHostMessage("[DISCONNECTED]");
+  if (reason) {
+    addHostMessage(reason);
+  }
+  if (details) {
+    addHostMessage(JSON.stringify(details, null, 2));
+  }
+});
+
+window.closeSocket = function () {
+  if (socket && socket.io && socket.io.engine) {
+    socket.io.engine.close();
+  }
+};
+
 export function addHostMessage(message) {
-  return;
-  /*  const item = document.createElement("div");
-  item.innerText = message;
-  hostArea.appendChild(item); */
+  console.log(message);
+  const log = document.getElementById("log");
+  const div = document.createElement("div");
+  div.innerText = message;
+  log.appendChild(div);
 }

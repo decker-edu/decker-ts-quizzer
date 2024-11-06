@@ -1,5 +1,4 @@
 import { addHostMessage } from "./host.mjs";
-import config from "./config.mjs";
 
 export let testSession = {
   id: undefined,
@@ -8,24 +7,43 @@ export let testSession = {
 
 export const testAssignQuiz = {
   type: "assignment",
-  question: "What is a man?",
   choices: [
     {
       votes: 1,
+      categories: [
+        {
+          number: 1,
+        },
+        {
+          number: 2,
+        },
+        {
+          number: 3,
+        },
+      ],
       options: [
         {
-          label: "Secrets",
-          reason: "A pile of",
+          label: "Object A",
+          letter: "A",
+          reason: "Category A",
           correct: false,
         },
         {
-          label: "Enough",
-          reason: "Talk",
+          label: "Object B",
+          letter: "B",
+          reason: "Category B",
           correct: false,
         },
         {
-          label: "At you",
-          reason: "Have",
+          label: "Object C1",
+          letter: "C",
+          reason: "Category C",
+          correct: false,
+        },
+        {
+          label: "Object C2",
+          letter: "D",
+          reason: "Category C",
           correct: false,
         },
       ],
@@ -35,24 +53,32 @@ export const testAssignQuiz = {
 
 export const testSelectQuiz = {
   type: "selection",
-  question: "[#1] is a man? A [#2] pile of secrets!",
   choices: [
     {
       votes: 1,
       options: [
         {
-          label: "What",
+          label: "Correct A1",
+          letter: "A",
           reason: "Correct",
           correct: true,
         },
         {
-          label: "Why",
-          reason: "No, that is the human condition.",
+          label: "Incorrect B1",
+          letter: "B",
+          reason: "Explanation B1",
           correct: false,
         },
         {
-          label: "When",
-          reason: "Not right now.",
+          label: "Incorrect C1",
+          letter: "C",
+          reason: "Explanation C1",
+          correct: false,
+        },
+        {
+          label: "Incorrect D1",
+          letter: "D",
+          reason: "Explanation D1",
           correct: false,
         },
       ],
@@ -61,18 +87,27 @@ export const testSelectQuiz = {
       votes: 1,
       options: [
         {
-          label: "glorious",
-          reason: "Not as incandessant as you think.",
-          correct: false,
-        },
-        {
-          label: "miserable",
-          reason: "But enough talk!",
+          label: "Correct A2",
+          letter: "A",
+          reason: "Correct",
           correct: true,
         },
         {
-          label: "xenophobic",
-          reason: "Actually true, but no.",
+          label: "Incorrect B2",
+          letter: "B",
+          reason: "Explanation B2",
+          correct: false,
+        },
+        {
+          label: "Incorrect C2",
+          letter: "C",
+          reason: "Explanation C2",
+          correct: false,
+        },
+        {
+          label: "Incorrect D2",
+          letter: "D",
+          reason: "Explanation D2",
           correct: false,
         },
       ],
@@ -82,16 +117,33 @@ export const testSelectQuiz = {
 
 export const testTextQuiz = {
   type: "freetext",
-  question:
-    "[#1] is a man? A [#2] pile of secrets! But [#3] talk! Have at you[#4]",
   choices: [
     {
       votes: 1,
       options: [
         {
-          label: "What",
-          reason: "That is the question.",
+          label: "Correct A1",
+          letter: "A",
+          reason: "Correct",
           correct: true,
+        },
+        {
+          label: "Incorrect B1",
+          letter: "B",
+          reason: "Explanation B1",
+          correct: false,
+        },
+        {
+          label: "Incorrect C1",
+          letter: "C",
+          reason: "Explanation C1",
+          correct: false,
+        },
+        {
+          label: "Incorrect D1",
+          letter: "D",
+          reason: "Explanation D1",
+          correct: false,
         },
       ],
     },
@@ -99,29 +151,28 @@ export const testTextQuiz = {
       votes: 1,
       options: [
         {
-          label: "miserable",
-          reason: "The human condition.",
+          label: "Correct A2",
+          letter: "A",
+          reason: "Correct",
           correct: true,
         },
-      ],
-    },
-    {
-      votes: 1,
-      options: [
         {
-          label: "enough",
-          reason: "Kenough",
-          correct: true,
+          label: "Incorrect B2",
+          letter: "B",
+          reason: "Explanation B2",
+          correct: false,
         },
-      ],
-    },
-    {
-      votes: 1,
-      options: [
         {
-          label: "!",
-          reason: "Because Not",
-          correct: true,
+          label: "Incorrect C2",
+          letter: "C",
+          reason: "Explanation C2",
+          correct: false,
+        },
+        {
+          label: "Incorrect D2",
+          letter: "D",
+          reason: "Explanation D2",
+          correct: false,
         },
       ],
     },
@@ -130,22 +181,33 @@ export const testTextQuiz = {
 
 export const testChoiceQuiz = {
   type: "choice",
-  question: "What is a man?",
   choices: [
     {
       votes: 1,
       options: [
         {
-          label: "A miserable pile of secrets!",
-          reason: "Die, monster! You do not belong in this world!",
+          label: "Correct A1",
+          letter: "A",
+          reason: "Correct",
           correct: true,
-          chosen: 0,
         },
         {
-          label: "Enough Talk!",
-          reason: "Have at you!",
+          label: "Incorrect B1",
+          letter: "B",
+          reason: "Explanation B1",
           correct: false,
-          chosen: 0,
+        },
+        {
+          label: "Incorrect C1",
+          letter: "C",
+          reason: "Explanation C1",
+          correct: false,
+        },
+        {
+          label: "Incorrect D1",
+          letter: "D",
+          reason: "Explanation D1",
+          correct: false,
         },
       ],
     },
@@ -154,7 +216,7 @@ export const testChoiceQuiz = {
 
 export async function createTestSession() {
   try {
-    const response = await fetch(`${config.subroute}/api/session`, {
+    const response = await fetch(`./api/session`, {
       method: "POST",
     });
     const json = await response.json();

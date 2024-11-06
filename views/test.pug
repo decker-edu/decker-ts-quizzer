@@ -1,30 +1,35 @@
 extends layout
 
 block styles
+  link(rel='stylesheet', href='./stylesheets/host.css')
 
 block scripts
-  script(type="module", src="./javascripts/client.mjs") 
+  script(src="./socket.io/socket.io.js")
   script(type="module", src="./javascripts/host.mjs") 
   script(src="./javascripts/wordcloud2.js")
 
 block content
-  h1= title
-  h2 Host Area
-  div#host-area
-  div#host-buttons(hidden)
-    button#choiceTestButton(type="button") Choice Quiz
-    button#selectTestButton(type="button") Select Quiz
-    button#freetextTestButton(type="button") Freetext Quiz
-    button#assignmentTestButton(type="button") Assignment Quiz
-                
-    button#evaluateButton(type="button") Evaluate Quiz
-  div#canvas-area
-
-  h2 Client Area
-  div#connect-area
-    input#session-id(type="text" placeholder="Session ID")
-    button(type="button" onclick="moduleConnect()") Connect
-  div#client-area
-  dialog#share-dialog
-    p#menu-session-label
-    canvas#menu-qr-code
+  header
+    h1= title
+  main
+    div#host-area
+      div.control-category
+        h2 Set Quiz
+        div#host-buttons.button-group
+          button#choiceTestButton(type="button" disabled) Choice Quiz
+          button#selectTestButton(type="button" disabled) Select Quiz
+          button#freetextTestButton(type="button" disabled) Freetext Quiz
+          button#assignmentTestButton(type="button" disabled) Assignment Quiz
+      div.control-category
+        h2 Control Quiz
+        div#quiz-controls.button-group
+          button#evaluateButton(type="button" disabled) Evaluate Quiz
+      div.control-category
+        h2 Control Socket
+        div#socket-controls.button-group
+          button#killButton(type="button" onclick="closeSocket()") Close Socket
+      div#message-area
+        h2 Messages
+        pre#log
+      div#canvas-area
+        h2 Canvas Test
