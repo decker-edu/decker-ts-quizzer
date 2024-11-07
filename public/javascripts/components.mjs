@@ -14,7 +14,7 @@ export function createWaitInterface() {
   const container = document.createElement("div");
   container.className = "wait-container";
   const message = document.createElement("span");
-  message.innerText = "Bitte warten! Es wurde noch kein Quiz gestartet.";
+  message.innerHTML = "Bitte warten!<br>Es wurde noch kein Quiz gestartet.";
 
   container.append(message);
   return container;

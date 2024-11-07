@@ -64,34 +64,33 @@
 
 #client-area {
   width: 100%;
-  min-height: 100%;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 :is(.wait-container, .done-container) {
   position: relative;
   display: flex;
   flex-direction: column;
-  align-content: center;
+  justify-content: center;
+  align-items: center;
   width: 100%;
   height: 100%;
-  background-color: #0680ff;
 }
 
 :is(.wait-container, .done-container) span {
   display: block;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%);
   color: #ffe33f;
   font-size: 4vmin;
   font-weight: bold;
+  text-align: center;
   text-shadow:
     -1px -1px 0 black,
      1px  1px 0 black,
     -1px  1px 0 black,
      1px -1px 0 black;
-  transform-origin: 50% 50%;
   white-space: nowrap;
 }
 
@@ -99,12 +98,33 @@
   display: none;
 }
 
+#quiz-area {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-bottom: 0.25rem;
+}
+
+#quiz-area:has(.wait-container),
+#quiz-area:has(.done-container) {
+  background-color: #0680ff;
+}
+
+#menu-area {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  padding: 0;
+  margin: 0;
+}
+
 #menu-button {
-  position: fixed;
   color: black;
-  top: 0.5rem;
-  right: 0.5rem;
-  font-size: 2rem;
+  font-size: 5vh;
+  padding: 0.2em;
   border: none;
   background: transparent;
   cursor: pointer;
@@ -117,6 +137,10 @@
 
 #menu-button:active {
   color: darkgray;
+}
+
+:root:not(.connected) #menu-button {
+  display: none;
 }
 
 #share-dialog[open]{
@@ -157,9 +181,8 @@
 .quizzer-container {
   box-sizing: border-box;
   width: 100%;
-  height: 100%;
-  padding: 1rem;
   gap: 0.5rem;
+  flex-grow: 1;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -187,7 +210,6 @@
   justify-content: center;
   align-items: center;
   width: 100%;
-  height: 10%;
   flex-grow: 0;
 }
 

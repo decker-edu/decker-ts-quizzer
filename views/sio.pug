@@ -8,12 +8,14 @@ block scripts
   script(type="module", src="./javascripts/sio-client.mjs") 
 
 block content
-  button#menu-button(onclick="openDialog()" aria-label="Share" title="Share")
-    span.fa-solid.fa-share-from-square
   div#connect-area
     input#session-id(type="text" placeholder="")
     button#connect-button(type="button" onclick="moduleConnect()") 
-  div#client-area
+  div#quiz-area
+    div#menu-area
+      button#menu-button(onclick="openDialog()" aria-label="Share" title="Share")
+        span.fa-solid.fa-share-from-square
+    div#client-area
   dialog#share-dialog
     p
       span#menu-session-label
