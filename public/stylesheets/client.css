@@ -8,9 +8,9 @@
 :root {
   --background-color: #ffffff;
   --widget-text-color: #000000;
-  --widget-idle-color: #eab700;
-  --widget-hover-color: #f5871f;
-  --widget-active-color: #c82829;
+  --widget-idle-color: rgb(238, 238, 238);
+  --widget-hover-color: rgb(214, 214, 214);
+  --widget-active-color: rgb(142,144,140);
   --widget-border-width: 3px;
   --widget-border-color: #000000;
   --widget-border-radius: 0.25rem;
@@ -18,8 +18,16 @@
   --disabled-text-color: #444444;
   --submit-idle-color: #84b819;
   --submit-text-color: #ffffff;
-  --submit-hover-color: color-mix(in srgb, var(--submit-idle-color), #ffffff 20%);
-  --submit-active-color: color-mix(in srgb, var(--submit-idle-color), #000000 20%);
+  --submit-hover-color: color-mix(
+    in srgb,
+    var(--submit-idle-color),
+    #ffffff 20%
+  );
+  --submit-active-color: color-mix(
+    in srgb,
+    var(--submit-idle-color),
+    #000000 20%
+  );
 }
 
 :is(textarea, input, button, select) {
@@ -211,7 +219,6 @@
 .submit-area button:active:not(:disabled) {
   background-color: var(--submit-active-color);
 }
-
 
 :root:not(.connected) #quiz-area {
   display: none;

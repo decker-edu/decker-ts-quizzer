@@ -44,8 +44,8 @@ function attach(session) {
       hideConnectInput();
 
       clearClientArea();
-      const doneElement = createWaitInterface();
-      clientArea.appendChild(doneElement);
+      const waitElement = createWaitInterface();
+      clientArea.appendChild(waitElement);
 
       let url = new URL(base.href + session);
       history.replaceState({}, "", url);

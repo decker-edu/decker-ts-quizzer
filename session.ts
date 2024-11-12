@@ -106,12 +106,12 @@ export default class Session {
     if (this.activeQuiz) {
       connection.sendQuiz(this.activeQuiz);
     }
-    this.sendQuizStateToHost(undefined);
+    this.sendParticipants();
   }
 
   addAnswer(connection: SIOConnection, answer: string[]) {
     this.answers.push([connection, answer]);
-    this.sendQuizStateToHost(undefined);
+    this.sendParticipants();
   }
 
   detach(connection: SIOConnection) {
@@ -124,10 +124,10 @@ export default class Session {
     if (index > -1) {
       this.connections.splice(index, 1)[0];
     }
-    this.sendQuizStateToHost(undefined);
+    this.sendParticipants();
   }
 
-  sendQuizStateToHost(result: any) {
+  sendParticipants() {
     if (this.host) {
       let done = 0;
       for (const connection of this.connections) {
@@ -135,7 +135,13 @@ export default class Session {
           done++;
         }
       }
-      this.host.sendState(this.connections.length, done, result);
+      this.host.sendParticipants(this.connections.length, done);
+    }
+  }
+
+  sendResults(result: any) {
+    if (this.host) {
+      this.host.sendResults(result);
     }
   }
 
@@ -148,7 +154,7 @@ export default class Session {
       connection.resetAnswers();
       connection.sendQuiz(quiz);
     }
-    this.sendQuizStateToHost(undefined);
+    this.sendParticipants();
   }
 
   evaluateChoiceQuiz(): [SIOConnection[], any] {
@@ -364,7 +370,7 @@ export default class Session {
       const winner = winners.splice(random, 1)[0];
       winner.sendWinner();
     }
-    this.sendQuizStateToHost(result);
+    this.sendResults(result);
     // Reset internal state
     this.activeQuiz = undefined;
     for (const connection of this.connections) {

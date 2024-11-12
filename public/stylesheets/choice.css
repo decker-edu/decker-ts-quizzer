@@ -20,11 +20,11 @@
 }
 
 .choice-quiz button[aria-pressed=true]:hover:not(:disabled) {
-  background-color: #3e999f;
+  background-color: color-mix(in srgb, #2a9ddf 80%, rgb(0,0,0) 20%);
 }
 
 .choice-quiz button[aria-pressed=true]:active:not(:disabled) {
-  background-color: #8959a8;
+  background-color: color-mix(in srgb, #2a9ddf 70%, rgb(0,0,0) 30%);
   color: white;
 }
 

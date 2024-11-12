@@ -96,12 +96,12 @@ socket.on("error", (message) => {
   addHostMessage(`[ERROR] ${message}`);
 });
 
-socket.on("state", (connections, done, result) => {
-  if (result) {
-    addHostMessage(JSON.stringify(result, null, 2));
-  } else {
-    addHostMessage(`Connections: ${connections} Done: ${done}`);
-  }
+socket.on("participants", (connections, done) => {
+  addHostMessage(`Connections: ${connections} Done: ${done}`);
+});
+
+socket.on("result", (result) => {
+  addHostMessage(JSON.stringify(result, null, 2));
 });
 
 socket.on("disconnect", (reason, details) => {

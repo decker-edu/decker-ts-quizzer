@@ -1,9 +1,9 @@
 :root {
   --background-color: #ffffff;
   --widget-text-color: #000000;
-  --widget-idle-color: #eab700;
-  --widget-hover-color: #f5871f;
-  --widget-active-color: #c82829;
+  --widget-idle-color: rgb(238, 238, 238);
+  --widget-hover-color: rgb(214, 214, 214);
+  --widget-active-color: rgb(142,144,140);
   --widget-border-width: 3px;
   --widget-border-color: #000000;
   --widget-border-radius: 0.25rem;

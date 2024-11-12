@@ -32,6 +32,7 @@ export default class SIOConnection {
       }
       if (typeof secret === "function") {
         callback = secret;
+        secret = null;
       }
       if (typeof callback !== "function") {
         return;
@@ -41,8 +42,8 @@ export default class SIOConnection {
         this.session = session;
         if (secret) {
           if (this.session.secret === secret) {
-            this.session.setHost(connection);
             callback(sessionID, null);
+            this.session.setHost(connection);
           } else {
             callback(null, "wrong secret");
           }
@@ -97,12 +98,12 @@ export default class SIOConnection {
     this.socket.emit("quiz", quiz);
   }
 
-  sendState(connections: number, done: number, result: any) {
-    if (!result) {
-      this.socket.emit("state", connections, done, undefined);
-    } else {
-      this.socket.emit("state", connections, done, result);
-    }
+  sendParticipants(connections: number, done: number) {
+    this.socket.emit("participants", connections, done);
+  }
+
+  sendResults(result: any) {
+    this.socket.emit("result", result);
   }
 
   sendDone() {
