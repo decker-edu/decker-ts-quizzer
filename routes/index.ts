@@ -9,7 +9,20 @@ import cors from "cors";
 
 const router: Router = Router();
 
-function randomString(length: number): string {
+function randomString(
+  length: number,
+  characters: string = "abcdefghijklmnopqrstuvwxyz"
+) {
+  let result = "";
+  let options = characters ? characters : "abcdefghijklmnopqrstuvwxyz";
+  let amount = options.length;
+  for (let i = 0; i < length; i++) {
+    result += options.charAt(Math.floor(Math.random() * amount));
+  }
+  return result;
+}
+
+function randomSecret(length: number): string {
   const hash = crypto
     .createHash("sha256")
     .update((+new Date()).toString(36))
@@ -56,7 +69,7 @@ router.post(
     while (getSession(id)) {
       id = randomString(4);
     }
-    const secret = randomString(8);
+    const secret = randomSecret(8);
     const session = new Session(id, secret);
     registerSession(id, session);
     return res.status(200).json({ id: id, secret: secret }).end();

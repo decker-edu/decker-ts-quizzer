@@ -4,6 +4,31 @@ import util from "util";
 
 const sessions = new Map<string, Session>();
 
+function cleanOldSessions() {
+  console.log("[SESSION] Cleaning old session");
+  const remove = [];
+  for (const key of sessions.keys()) {
+    const session = sessions.get(key);
+    if (
+      session &&
+      session.mostRecentInteraction + 1000 * 60 * 60 * 4 < Date.now()
+    ) {
+      remove.push(key);
+    }
+  }
+  for (const key of remove) {
+    sessions.delete(key);
+    console.log("[SESSION] Deleting session " + key);
+  }
+}
+
+export let cleanInterval: NodeJS.Timeout;
+
+export function startCleanInterval() {
+  console.log("[SESSION] Starting cleaning interval.");
+  cleanInterval = setInterval(cleanOldSessions, 1000 * 60 * 60);
+}
+
 export type Quiz = {
   type: "choice" | "selection" | "freetext" | "assignment";
   choices: Choice[];
@@ -79,6 +104,7 @@ export default class Session {
   quizNumber: number;
   answers: [SIOConnection, string[]][];
   result: any;
+  mostRecentInteraction: number;
 
   constructor(id: string, secret: string) {
     this.id = id;
@@ -86,6 +112,7 @@ export default class Session {
     this.connections = [];
     this.answers = [];
     this.quizNumber = 0;
+    this.mostRecentInteraction = Date.now();
   }
 
   setHost(connection: SIOConnection | undefined) {
@@ -93,6 +120,7 @@ export default class Session {
       this.host.sendReplacedMessage();
     }
     this.host = connection;
+    this.mostRecentInteraction = Date.now();
   }
 
   broadcast(event: string, message: any) {
@@ -155,6 +183,7 @@ export default class Session {
       connection.sendQuiz(quiz);
     }
     this.sendParticipants();
+    this.mostRecentInteraction = Date.now();
   }
 
   evaluateChoiceQuiz(): [SIOConnection[], any] {
@@ -348,6 +377,7 @@ export default class Session {
   }
 
   evaluate() {
+    this.mostRecentInteraction = Date.now();
     if (!this.activeQuiz) {
       return;
     }

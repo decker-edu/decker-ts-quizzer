@@ -3,6 +3,7 @@ import Debug from "debug";
 import http from "http";
 import { Server } from "socket.io";
 import SIOConnection from "./connection";
+import { startCleanInterval } from "./session";
 
 const debug = Debug("decker-ts-quizzer");
 
@@ -122,6 +123,7 @@ function onListening() {
     var bind = typeof addr === "string" ? "pipe " + addr : "port " + addr.port;
     console.log("Listening on " + bind);
   }
+  startCleanInterval();
 }
 
 /**
