@@ -39,7 +39,7 @@ function getSessionID() {
 function attach(session) {
   webSocket.emit("attach", session, null, (session, error) => {
     if (error) {
-      postNotification(error, "error");
+      // postNotification(error, "error");
     } else {
       hideConnectInput();
 
@@ -126,15 +126,15 @@ function postNotification(message, cls) {
 
 webSocket.on("error", (message) => {
   console.error(message);
-  postNotification(message, "error");
+  // postNotification(message, "error");
 });
 
 webSocket.on("notification", (message) => {
-  postNotification(message);
+  // postNotification(message);
 });
 
 webSocket.on("disconnect", (reason) => {
-  postNotification(reason, "error");
+  // postNotification(reason, "error");
 });
 
 let currentQuiz = undefined;

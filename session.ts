@@ -377,10 +377,10 @@ export default class Session {
   }
 
   evaluate() {
-    this.mostRecentInteraction = Date.now();
     if (!this.activeQuiz) {
       return;
     }
+    this.mostRecentInteraction = Date.now();
     let winners: SIOConnection[] = [];
     let result: any = undefined;
     if (this.activeQuiz.type === "choice") {

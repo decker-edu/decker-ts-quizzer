@@ -70,7 +70,6 @@ export default class SIOConnection {
         this.session.evaluate();
       } else {
         this.socket.emit("error", "not host");
-        this.socket.disconnect(true);
       }
     });
     this.socket.on("answer", (quizNumber, answers) => {
