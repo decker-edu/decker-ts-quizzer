@@ -10,10 +10,11 @@ block scripts
 block content
   div#connect-area
     input#session-id(type="text" placeholder="" autocapitalize="off" spellcheck="false" autofocus)
-    button#connect-button(type="button" onclick="moduleConnect()") 
+    button#connect-button(type="button") 
   div#quiz-area
     div#menu-area
-      button#menu-button(onclick="openDialog()" aria-label="Share" title="Share")
+      h1#menu-title
+      button#menu-button(onclick="openDialog()")
         span.fa-solid.fa-share-from-square
     div#client-area
   dialog#share-dialog

@@ -13,7 +13,13 @@ const german = {
   connectLabel: "Beitreten",
   submitLabel: "Absenden",
   selectionPlaceholder: "Auswählen ...",
+  textPlaceholder: "Antwort #{0} ...",
   unassigned: "Keine Zuweisung",
+  choiceQuiz: "Multiple-Choice-Quiz",
+  freetextQuiz: "Freitext-Quiz",
+  selectionQuiz: "Auswahl-Quiz",
+  assignmentQuiz: "Zuweisungs-Quiz",
+  share: "Teilen",
 };
 
 const english = {
@@ -23,5 +29,11 @@ const english = {
   connectLabel: "Connect",
   submitLabel: "Submit",
   selectionPlaceholder: "Choose ...",
+  textPlaceholder: "Answer #{0} ...",
   unassigned: "Unassigned",
+  choiceQuiz: "Multiple-Choice Quiz",
+  freetextQuiz: "Free Text Quiz",
+  selectionQuiz: "Selection Quiz",
+  assignmentQuiz: "Assignment Quiz",
+  share: "Share",
 };

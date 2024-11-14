@@ -26,6 +26,8 @@ function createContainer() {
 }
 export default class Renderer {
   static renderAssignmentQuiz(parent, quiz) {
+    const menuTitle = document.getElementById("menu-title");
+    menuTitle.innerText = l10n.assignmentQuiz;
     const container = createContainer();
     container.classList.add("assignment-quiz");
     const choice = quiz.choices[0];
@@ -79,6 +81,8 @@ export default class Renderer {
   }
 
   static renderSelectQuiz(parent, quiz) {
+    const menuTitle = document.getElementById("menu-title");
+    menuTitle.innerText = l10n.selectionQuiz;
     const container = createContainer();
     container.classList.add("selection-quiz");
     const selections = [];
@@ -121,13 +125,18 @@ export default class Renderer {
   }
 
   static renderTextQuiz(parent, quiz) {
+    const menuTitle = document.getElementById("menu-title");
+    menuTitle.innerText = l10n.freetextQuiz;
     const container = createContainer();
     container.classList.add("text-quiz");
     const inputs = [];
+    let number = 1;
     for (const _ of quiz.choices) {
       const input = document.createElement("input");
       input.type = "text";
       input.spellcheck = false;
+      const placeholderText = l10n.textPlaceholder;
+      input.placeholder = placeholderText.replace(/\{0\}/g, number++);
       container.answerArea.appendChild(input);
       inputs.push(input);
     }
@@ -144,6 +153,8 @@ export default class Renderer {
   }
 
   static renderChoiceQuiz(parent, quiz) {
+    const menuTitle = document.getElementById("menu-title");
+    menuTitle.innerText = l10n.choiceQuiz;
     const container = createContainer();
     container.classList.add("choice-quiz");
     const choice = quiz.choices[0];

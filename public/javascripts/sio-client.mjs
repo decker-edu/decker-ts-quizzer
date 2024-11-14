@@ -65,12 +65,10 @@ function attach(session) {
   });
 }
 
-function attachByButton() {
+function attachViaInput() {
   const id = document.getElementById("session-id");
   attach(id.value);
 }
-
-window.moduleConnect = attachByButton;
 
 function showConnectInput() {
   const root = document.documentElement;
@@ -195,6 +193,21 @@ window.openDialog = () => {
 
 const session_input = document.getElementById("session-id");
 session_input.placeholder = l10n.sessionInput;
+session_input.addEventListener("keyup", (event) => {
+  if (session_input.value.length === 4) {
+    attachViaInput();
+  }
+});
+
+session_input.addEventListener("keydown", (event) => {
+  if (event.key === "Enter") {
+    attachViaInput();
+  }
+});
 
 const connect_button = document.getElementById("connect-button");
 connect_button.innerText = l10n.connectLabel;
+
+const share_button = document.getElementById("menu-button");
+share_button.title = l10n.share;
+share_button.ariaLabel = l10n.share;
