@@ -14,7 +14,7 @@ export function createWaitInterface() {
   const container = document.createElement("div");
   container.className = "wait-container";
   const message = document.createElement("span");
-  message.innerHTML = "Bitte warten!<br>Es wurde noch kein Quiz gestartet.";
+  message.innerHTML = "Bitte warten.<br>Es wurde noch kein Quiz gestartet.";
 
   container.append(message);
   return container;
@@ -24,8 +24,8 @@ export function createDoneInterface() {
   const container = document.createElement("div");
   container.className = "done-container";
   const message = document.createElement("span");
-  message.innerText =
-    "Das Quiz wurde ausgeweret.\nBitte warte auf das nächste oder schließe diesen Tab.";
+  message.innerHTML =
+    "Das Quiz wurde ausgewertet.<br>Bitte warte auf das Nächste oder schließe diesen Tab.";
   container.appendChild(message);
   return container;
 }

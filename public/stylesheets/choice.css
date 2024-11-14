@@ -1,7 +1,7 @@
 .choice-quiz .answer-area button {
   flex-grow: 1;
   width: 66%;
-  padding: 0.25em;
+  padding: 0.5em;
   background-color: var(--widget-idle-color);
   border-radius: 0.5rem;
 }
