@@ -3,7 +3,7 @@
   width: 66%;
   padding: 0.5em;
   background-color: var(--widget-idle-color);
-  border-radius: 0.5rem;
+  border-radius: var(--widget-border-radius);
 }
 
 .choice-quiz button:hover:not(:disabled) {
