@@ -127,6 +127,7 @@ export default class Renderer {
     for (const _ of quiz.choices) {
       const input = document.createElement("input");
       input.type = "text";
+      input.spellcheck = false;
       container.answerArea.appendChild(input);
       inputs.push(input);
     }
