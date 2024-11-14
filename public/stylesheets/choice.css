@@ -1,4 +1,6 @@
 .choice-quiz .answer-area button {
+  font-weight: bold;
+  
   flex-grow: 1;
   width: 66%;
   padding: 0.5em;
@@ -19,13 +21,15 @@
   background-color: #2a9ddf;
 }
 
-.choice-quiz button[aria-pressed=true]:hover:not(:disabled) {
-  background-color: color-mix(in srgb, #2a9ddf 80%, rgb(0,0,0) 20%);
-}
-
-.choice-quiz button[aria-pressed=true]:active:not(:disabled) {
-  background-color: color-mix(in srgb, #2a9ddf 70%, rgb(0,0,0) 30%);
-  color: white;
+@media (hover: hover) {
+  .choice-quiz button[aria-pressed=true]:hover:not(:disabled) {
+    background-color: color-mix(in srgb, #2a9ddf 80%, rgb(0,0,0) 20%);
+  }
+  
+  .choice-quiz button[aria-pressed=true]:active:not(:disabled) {
+    background-color: color-mix(in srgb, #2a9ddf 70%, rgb(0,0,0) 30%);
+    color: white;
+  }
 }
 
 .choice-quiz button[aria-pressed=true]:disabled {
