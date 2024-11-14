@@ -8,20 +8,20 @@
   border-radius: var(--widget-border-radius);
 }
 
-.choice-quiz button:hover:not(:disabled) {
-  background-color: var(--widget-hover-color);
-}
-
-.choice-quiz button:active:not(:disabled) {
-  background-color: var(--widget-active-color);
-  color: white;
-}
-
 .choice-quiz button[aria-pressed=true] {
   background-color: #2a9ddf;
 }
 
 @media (hover: hover) {
+  .choice-quiz button:hover:not(:disabled) {
+    background-color: var(--widget-hover-color);
+  }
+  
+  .choice-quiz button:active:not(:disabled) {
+    background-color: var(--widget-active-color);
+    color: white;
+  }
+
   .choice-quiz button[aria-pressed=true]:hover:not(:disabled) {
     background-color: color-mix(in srgb, #2a9ddf 80%, rgb(0,0,0) 20%);
   }
