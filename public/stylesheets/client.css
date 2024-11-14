@@ -41,11 +41,11 @@
   border-radius: var(--widget-border-radius);
 }
 
-:is(textarea, input, button, select):hover {
+:is(textarea, input, select):hover {
   background-color: var(--widget-hover-color);
 }
 
-:is(textarea, input, button, select):active {
+:is(textarea, input, select):active {
   background-color: var(--widget-active-color);
 }
 
