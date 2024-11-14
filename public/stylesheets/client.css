@@ -41,12 +41,14 @@
   border-radius: var(--widget-border-radius);
 }
 
-:is(textarea, input, select):hover {
-  background-color: var(--widget-hover-color);
-}
-
-:is(textarea, input, select):active {
-  background-color: var(--widget-active-color);
+@media (hover: hover) {
+  :is(textarea, input, select):hover {
+    background-color: var(--widget-hover-color);
+  }
+  
+  :is(textarea, input, select):active {
+    background-color: var(--widget-active-color);
+  }
 }
 
 #connect-area {
@@ -68,7 +70,7 @@
   margin: 0;
 }
 
-#connect-area input {
+input {
   border-radius: 0 !important;
 }
 
