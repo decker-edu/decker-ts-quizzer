@@ -61,6 +61,17 @@ router.get(
   }
 );
 
+router.get(
+  "/debug",
+  function (req: Request, res: Response, next: NextFunction) {
+    const xpath = req.headers["x-path"];
+    return res.render("debug", {
+      title: "Quizzer",
+      base: xpath ? xpath : base,
+    });
+  }
+);
+
 router.post(
   "/api/session",
   cors(),

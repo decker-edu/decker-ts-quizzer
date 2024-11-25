@@ -1,0 +1,24 @@
+extends layout
+
+block styles
+  link(rel='stylesheet', href='./stylesheets/client.css')
+
+block scripts
+  script(src="./socket.io/socket.io.js")
+  script(type="module", src="./javascripts/sio-debug.mjs") 
+
+block content
+  div#connect-area
+    input#session-id(type="text" placeholder="" autocapitalize="off" spellcheck="false" autofocus)
+    button#connect-button(type="button") 
+  div#quiz-area
+    div#menu-area
+      h1#menu-title
+      button#menu-button(type="button" onclick="openDialog()")
+        span.fa-solid.fa-share-from-square
+    div#client-area
+  div#debug
+  dialog#share-dialog
+    p
+      span#menu-session-label
+    canvas#menu-qr-code

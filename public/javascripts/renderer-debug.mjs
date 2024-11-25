@@ -1,4 +1,4 @@
-import { sendAnswers } from "./sio-client.mjs";
+import { sendAnswers } from "./sio-debug.mjs";
 import localization from "./localization.mjs";
 
 const l10n = localization(navigator.language);
