@@ -20,6 +20,7 @@ export default class SIOConnection {
       ) {
         if (this.session) {
           this.session.detach(connection);
+          this.session = undefined;
         }
       }
     });
@@ -103,6 +104,10 @@ export default class SIOConnection {
 
   sendResults(result: any) {
     this.socket.emit("result", result);
+  }
+
+  sendClarificationRequest() {
+    this.socket.emit("reconnected", undefined);
   }
 
   sendDone() {

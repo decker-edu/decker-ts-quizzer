@@ -42,8 +42,13 @@ io.on("connection", (socket) => {
     console.log("recovered connection: ", socket.id);
     const connection = connections.get(socket.id);
     if (connection) {
-      if (connection.session && connection.session.activeQuiz) {
-        connection.sendQuiz(connection.session.activeQuiz);
+      // The Connection was recovered and the client has not been detached from the session
+      if (connection.session) {
+        if (connection.session.activeQuiz) {
+          connection.sendQuiz(connection.session.activeQuiz);
+        }
+      } else {
+        connection.sendClarificationRequest();
       }
       connection.sendNotification("reconnected");
     }
@@ -53,14 +58,6 @@ io.on("connection", (socket) => {
     connections.set(socket.id, connection);
   }
 });
-
-/* old websocket code
-let wss = new ws.Server({ server, path: "/api/websocket" });
-
-wss.on("connection", function (ws: WebSocket) {
-  const connection = new Connection(ws);
-});
-*/
 
 /**
  * Normalize a port into a number, string, or false.
