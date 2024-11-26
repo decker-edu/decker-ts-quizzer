@@ -42,8 +42,10 @@ function attach(session) {
     if (error) {
       debug("[ERROR] attach()");
       debug(error);
+      showConnectInput();
       // postNotification(error, "error");
     } else {
+      debug("[ATTACH] to " + session);
       id = session;
       hideConnectInput();
 
@@ -96,11 +98,11 @@ webSocket.on("connect", (event) => {
   if (webSocket.recovered) {
     debug("[SOCKET] recovered socket");
   }
-  clearClientArea();
   const session = getSessionID();
   if (session) {
     attach(session);
   } else {
+    clearClientArea();
     showConnectInput();
   }
 });
@@ -157,7 +159,7 @@ webSocket.on("disconnect", (reason) => {
 let currentQuiz = undefined;
 
 webSocket.on("quiz", (quiz) => {
-  debug("[SOCKET] quiz: " + quiz.number);
+  debug("[SOCKET] quiz: #" + quiz.number);
   if (!currentQuiz || currentQuiz.number !== quiz.number) {
     currentQuiz = quiz;
     renderQuiz(quiz);
@@ -176,32 +178,6 @@ webSocket.on("done", () => {
   clearClientArea();
   const doneElement = createDoneInterface();
   clientArea.appendChild(doneElement);
-});
-
-webSocket.on("attached", (id) => {
-  debug("[SOCKET] attached");
-  hideConnectInput();
-
-  clearClientArea();
-  const doneElement = createWaitInterface();
-  clientArea.appendChild(doneElement);
-
-  let url = new URL(window.location);
-  url.search = `session=${id}`;
-
-  history.replaceState({}, "", url);
-
-  const canvas = document.getElementById("menu-qr-code");
-  bwip.toCanvas(canvas, {
-    bcid: "qrcode",
-    text: window.location.toString(),
-    scale: 8,
-    includetext: true,
-    textxalign: "center",
-    eclevel: "L",
-  });
-  const label = document.getElementById("menu-session-label");
-  label.innerText = l10n.sessionLabel.replace(/\{0\}/g, id);
 });
 
 const dialog = document.getElementById("share-dialog");
