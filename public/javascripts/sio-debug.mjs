@@ -44,6 +44,7 @@ function attach(session) {
       debug(error);
       // postNotification(error, "error");
     } else {
+      id = session;
       hideConnectInput();
 
       clearClientArea();
