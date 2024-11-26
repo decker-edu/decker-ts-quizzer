@@ -52,6 +52,7 @@ function attach(session) {
       clearClientArea();
       const waitElement = createWaitInterface();
       clientArea.appendChild(waitElement);
+      currentQuiz = null;
 
       let url = new URL(base.href + session);
       history.replaceState({}, "", url);
