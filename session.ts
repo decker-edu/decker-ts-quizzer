@@ -150,6 +150,7 @@ export default class Session {
     if (index > -1) {
       this.connections.splice(index, 1)[0];
     }
+    connection.session = null;
     this.sendParticipants();
   }
 

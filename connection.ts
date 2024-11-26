@@ -3,13 +3,13 @@ import Session, { Quiz, get as getSession } from "./session";
 
 export default class SIOConnection {
   socket: Socket;
-  session: Session | undefined;
+  session: Session | null;
   answers: string[] | undefined;
 
   constructor(socket: Socket) {
     const connection = this;
     this.socket = socket;
-    this.session = undefined;
+    this.session = null;
     this.socket.on("disconnect", (reason) => {
       console.log("disconnect reason", reason);
       if (

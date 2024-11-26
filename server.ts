@@ -38,24 +38,22 @@ const io = new Server(server, {
 });
 
 io.on("connection", (socket) => {
+  let session = null;
   if (socket.recovered) {
     console.log("recovered connection: ", socket.id);
     const connection = connections.get(socket.id);
     if (connection) {
-      connection.socket = socket;
-      // The Connection was recovered and the client has not been detached from the session
       if (connection.session) {
-        connection.session.attach(connection);
-        if (connection.session.activeQuiz) {
-          connection.sendQuiz(connection.session.activeQuiz);
-        }
+        session = connection.session;
+        session.detach(connection);
       }
-      connection.sendNotification("reconnected");
     }
-  } else {
-    console.log("new connection: ", socket.id);
-    const connection = new SIOConnection(socket);
-    connections.set(socket.id, connection);
+  }
+  console.log("new connection: ", socket.id);
+  const connection = new SIOConnection(socket);
+  connections.set(socket.id, connection);
+  if (session) {
+    session.attach(connection);
   }
 });
 
