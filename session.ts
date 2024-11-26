@@ -137,11 +137,6 @@ export default class Session {
     this.sendParticipants();
   }
 
-  addAnswer(connection: SIOConnection, answer: string[]) {
-    this.answers.push([connection, answer]);
-    this.sendParticipants();
-  }
-
   detach(connection: SIOConnection) {
     if (this.host === connection) {
       console.log(`[${this.id}] The host has left the session!`);
@@ -152,6 +147,11 @@ export default class Session {
     if (index > -1) {
       this.connections.splice(index, 1)[0];
     }
+    this.sendParticipants();
+  }
+
+  addAnswer(connection: SIOConnection, answer: string[]) {
+    this.answers.push([connection, answer]);
     this.sendParticipants();
   }
 

@@ -81,14 +81,12 @@ function hideConnectInput() {
 }
 
 webSocket.on("connect", (event) => {
-  if (!webSocket.recovered) {
-    clearClientArea();
-    const session = getSessionID();
-    if (session) {
-      attach(session);
-    } else {
-      showConnectInput();
-    }
+  clearClientArea();
+  const session = getSessionID();
+  if (session) {
+    attach(session);
+  } else {
+    showConnectInput();
   }
 });
 

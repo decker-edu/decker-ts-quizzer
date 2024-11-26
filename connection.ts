@@ -28,17 +28,17 @@ export default class SIOConnection {
       callback();
     });
     this.socket.on("attach", (sessionID, secret, callback) => {
-      if (this.session) {
-        this.session.detach(this);
-      }
       if (typeof secret === "function") {
         callback = secret;
         secret = null;
       }
+      const session = getSession(sessionID);
+      if (this.session) {
+        this.session.detach(this);
+      }
       if (typeof callback !== "function") {
         return;
       }
-      const session = getSession(sessionID);
       if (session) {
         this.session = session;
         if (secret) {
@@ -104,10 +104,6 @@ export default class SIOConnection {
 
   sendResults(result: any) {
     this.socket.emit("result", result);
-  }
-
-  sendClarificationRequest() {
-    this.socket.emit("reconnected", undefined);
   }
 
   sendDone() {

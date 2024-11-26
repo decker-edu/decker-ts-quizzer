@@ -47,8 +47,6 @@ io.on("connection", (socket) => {
         if (connection.session.activeQuiz) {
           connection.sendQuiz(connection.session.activeQuiz);
         }
-      } else {
-        connection.sendClarificationRequest();
       }
       connection.sendNotification("reconnected");
     }

@@ -37,6 +37,7 @@ function getSessionID() {
 }
 
 function attach(session) {
+  debug("[SEND] " + session);
   webSocket.emit("attach", session, null, (session, error) => {
     if (error) {
       debug("[ERROR] attach()");
@@ -91,25 +92,15 @@ function debug(message) {
 
 webSocket.on("connect", (event) => {
   debug("[SOCKET] connect");
-  if (!webSocket.recovered) {
-    clearClientArea();
-    const session = getSessionID();
-    if (session) {
-      attach(session);
-    } else {
-      showConnectInput();
-    }
+  if (webSocket.recovered) {
+    debug("[SOCKET] recovered socket");
   }
-});
-
-webSocket.on("reconnected", (session) => {
-  if (!session) {
-    const session = getSessionID();
-    if (session) {
-      attach(session);
-    } else {
-      showConnectInput();
-    }
+  clearClientArea();
+  const session = getSessionID();
+  if (session) {
+    attach(session);
+  } else {
+    showConnectInput();
   }
 });
 
@@ -165,7 +156,7 @@ webSocket.on("disconnect", (reason) => {
 let currentQuiz = undefined;
 
 webSocket.on("quiz", (quiz) => {
-  debug("[SOCKET] quiz");
+  debug("[SOCKET] quiz: " + quiz.number);
   if (!currentQuiz || currentQuiz.number !== quiz.number) {
     currentQuiz = quiz;
     renderQuiz(quiz);
