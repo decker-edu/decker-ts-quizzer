@@ -28,6 +28,7 @@ export default class SIOConnection {
       callback();
     });
     this.socket.on("attach", (sessionID, secret, callback) => {
+      console.log("[CONNECTION] attaching to " + sessionID);
       if (typeof secret === "function") {
         callback = secret;
         secret = null;
