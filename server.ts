@@ -42,6 +42,7 @@ io.on("connection", (socket) => {
     console.log("recovered connection: ", socket.id);
     const connection = connections.get(socket.id);
     if (connection) {
+      connection.socket = socket;
       // The Connection was recovered and the client has not been detached from the session
       if (connection.session) {
         connection.session.attach(connection);
