@@ -74,6 +74,7 @@ export default class SIOConnection {
       }
     });
     this.socket.on("answer", (quizNumber, answers) => {
+      console.log("[TEST]", quizNumber, answers);
       if (this.session) {
         const quiz = this.session.activeQuiz;
         if (quiz && quiz.number !== quizNumber) {
