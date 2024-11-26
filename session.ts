@@ -130,7 +130,10 @@ export default class Session {
   }
 
   attach(connection: SIOConnection) {
-    this.connections.push(connection);
+    const index = this.connections.indexOf(connection);
+    if (index > -1) {
+      this.connections.push(connection);
+    }
     if (this.activeQuiz) {
       connection.sendQuiz(this.activeQuiz);
     }

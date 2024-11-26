@@ -20,7 +20,6 @@ export default class SIOConnection {
       ) {
         if (this.session) {
           this.session.detach(connection);
-          this.session = undefined;
         }
       }
     });
