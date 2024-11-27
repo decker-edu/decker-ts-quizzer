@@ -4,12 +4,18 @@ import Session, { Quiz, get as getSession } from "./session";
 export default class SIOConnection {
   socket: Socket;
   session: Session | null;
+  isHost: boolean;
   answers: string[] | undefined;
 
   constructor(socket: Socket) {
-    const connection = this;
     this.socket = socket;
     this.session = null;
+    this.isHost = false;
+    this.registerEventHandlers();
+  }
+
+  registerEventHandlers() {
+    const connection = this;
     this.socket.on("disconnect", (reason) => {
       console.log("disconnect reason", reason);
       if (
@@ -27,7 +33,6 @@ export default class SIOConnection {
       callback();
     });
     this.socket.on("attach", (sessionID, secret, callback) => {
-      console.log("[CONNECTION] attaching to " + sessionID);
       if (typeof secret === "function") {
         callback = secret;
         secret = null;
@@ -35,7 +40,9 @@ export default class SIOConnection {
       const session = getSession(sessionID);
       if (this.session) {
         this.session.detach(this);
+        this.session = null;
       }
+      this.isHost = false;
       if (typeof callback !== "function") {
         return;
       }
@@ -44,6 +51,7 @@ export default class SIOConnection {
         if (secret) {
           if (this.session.secret === secret) {
             callback(sessionID, null);
+            this.isHost = true;
             this.session.setHost(connection);
           } else {
             callback(null, "wrong secret");
@@ -86,7 +94,13 @@ export default class SIOConnection {
     });
   }
 
+  replaceSocket(socket: Socket) {
+    this.socket = socket;
+    this.registerEventHandlers();
+  }
+
   sendReplacedMessage() {
+    this.isHost = false;
     this.socket.emit("replaced");
   }
 

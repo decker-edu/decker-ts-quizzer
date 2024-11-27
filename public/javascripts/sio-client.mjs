@@ -39,6 +39,7 @@ function getSessionID() {
 function attach(session) {
   webSocket.emit("attach", session, null, (session, error) => {
     if (error) {
+      showConnectInput();
       // postNotification(error, "error");
     } else {
       id = session;
@@ -84,11 +85,14 @@ function hideConnectInput() {
 
 webSocket.on("connect", (event) => {
   clearClientArea();
-  const session = getSessionID();
-  if (session) {
-    attach(session);
-  } else {
-    showConnectInput();
+  if (!webSocket.recovered) {
+    const session = getSessionID();
+    if (session) {
+      attach(session);
+    } else {
+      clearClientArea();
+      showConnectInput();
+    }
   }
 });
 

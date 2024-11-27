@@ -98,13 +98,14 @@ webSocket.on("connect", (event) => {
   debug("[SOCKET] connect");
   if (webSocket.recovered) {
     debug("[SOCKET] recovered socket");
-  }
-  const session = getSessionID();
-  if (session) {
-    attach(session);
   } else {
-    clearClientArea();
-    showConnectInput();
+    const session = getSessionID();
+    if (session) {
+      attach(session);
+    } else {
+      clearClientArea();
+      showConnectInput();
+    }
   }
 });
 
@@ -190,6 +191,8 @@ window.openDialog = () => {
   const dialog = document.getElementById("share-dialog");
   dialog.showModal();
 };
+
+window.socket = webSocket;
 
 const session_input = document.getElementById("session-id");
 session_input.placeholder = l10n.sessionInput;

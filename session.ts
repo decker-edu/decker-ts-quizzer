@@ -117,9 +117,13 @@ export default class Session {
 
   setHost(connection: SIOConnection | undefined) {
     if (this.host) {
-      this.host.sendReplacedMessage();
+      if (this.host !== connection) {
+        this.host.sendReplacedMessage();
+        this.host = connection;
+      }
+    } else {
+      this.host = connection;
     }
-    this.host = connection;
     this.mostRecentInteraction = Date.now();
   }
 
@@ -130,9 +134,11 @@ export default class Session {
   }
 
   attach(connection: SIOConnection) {
+    console.log("attach " + connection.socket.id);
     const index = this.connections.indexOf(connection);
     if (index === -1) {
       this.connections.push(connection);
+      connection.sendNotification("attached");
     }
     if (this.activeQuiz) {
       connection.sendQuiz(this.activeQuiz);
@@ -148,9 +154,9 @@ export default class Session {
     }
     const index = this.connections.indexOf(connection);
     if (index > -1) {
-      this.connections.splice(index, 1)[0];
+      const connection = this.connections.splice(index, 1)[0];
+      connection.sendNotification("detached");
     }
-    connection.session = null;
     this.sendParticipants();
   }
 

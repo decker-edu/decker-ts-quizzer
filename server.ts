@@ -38,22 +38,24 @@ const io = new Server(server, {
 });
 
 io.on("connection", (socket) => {
-  let session = null;
   if (socket.recovered) {
     console.log("recovered connection: ", socket.id);
     const connection = connections.get(socket.id);
     if (connection) {
+      connection.replaceSocket(socket);
       if (connection.session) {
-        session = connection.session;
-        session.detach(connection);
+        if (connection.isHost) {
+          console.log("recovered host");
+          connection.session.setHost(connection);
+        } else {
+          connection.session.attach(connection);
+        }
       }
     }
-  }
-  console.log("new connection: ", socket.id);
-  const connection = new SIOConnection(socket);
-  connections.set(socket.id, connection);
-  if (session) {
-    session.attach(connection);
+  } else {
+    console.log("new connection: ", socket.id);
+    const connection = new SIOConnection(socket);
+    connections.set(socket.id, connection);
   }
 });
 
