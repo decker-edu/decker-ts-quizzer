@@ -20,6 +20,9 @@ const german = {
   selectionQuiz: "Auswahl-Quiz",
   assignmentQuiz: "Zuweisungs-Quiz",
   share: "Teilen",
+  won: "! GEWONNEN !",
+  pleaseWait: "Bitte warten.<br>Es wurde noch kein Quiz gestartet.",
+  done: "Das Quiz wurde ausgewertet.<br>Bitte warte auf das Nächste oder schließe diesen Tab."
 };
 
 const english = {
@@ -36,4 +39,7 @@ const english = {
   selectionQuiz: "Selection Quiz",
   assignmentQuiz: "Assignment Quiz",
   share: "Share",
+  won: "! YOU WON !",
+  pleaseWait: "Please wait.<br>No quiz has been started yet.",
+  done: "The quiz has finished.<br>Please wait for the next one to start or close this tab."
 };
